@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<body>
+  <h1>Select a Baseball Player</h1>
+  <form id="player-form">
+    <select name="player" id="player-select">
+      {% for player in players %}
+        <option value="{{ player }}">{{ player }}</option>
+      {% endfor %}
+    </select>
+    <input type="submit" value="Get Stats">
+  </form>
+  <div id="player-stats"></div>
+  <form id="game-form" style="display: none;">
+    <select name="game_date" id="game-select"></select>
+    <input type="submit" value="Get Game Stats">
+  </form>
+  <div id="game-stats"></div>
+
+  <script>
+    const playerForm = document.getElementById('player-form');
+    const playerSelect = document.getElementById('player-select');
+    const playerStatsDiv = document.getElementById('player-stats');
+    const gameForm = document.getElementById('game-form');
+    let gameSelect = document.getElementById('game-select');
+    let gameStatsDiv = document.getElementById('game-stats');
+
+    playerForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const selectedPlayer = playerSelect.value;
+      const response = await fetch('/get_player_stats', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: `player=${selectedPlayer}`,
+      });
+      const data = await response.json();
+      const gameDates = data.game_dates;
+      gameSelect.innerHTML = '';
+      gameDates.forEach((gameDate) => {
+        const option = document.createElement('option');
+        option.value = gameDate;
+        option.textContent = gameDate;
+        gameSelect.appendChild(option);
+      });
+      gameForm.style.display = 'block';
+      // Pass the selected player to the game form
+      gameForm.selected_player = data.selected_player;
+    });
+
+    playerForm.addEventListener('change', () => {
+      gameStatsDiv.innerHTML = '';
+      gameSelect.innerHTML = '';
+    });
+
+    gameForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const selectedPlayer = gameForm.selected_player;
+      const selectedGameDate = gameSelect.value;
+      const response = await fetch('/get_game_stats', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: `selected_player=${selectedPlayer}&game_date=${selectedGameDate}`,
+      });
+      const data = await response.json();
+      const gameStats = JSON.parse(data.game_stats); // Parse the JSON object
+      const statsHtml = `
+        <table style="margin-left: 20px; margin-right: 20px; border-collapse: separate; border-spacing: 2px;">
+          <tr>
+            <th>Pitch Count</th>
+            <th>Pitch Type</th>
+          </tr>
+          ${gameStats.map((stats, index) => {
+            return `
+              <tr>
+                <td>Pitch #${index + 1}</td>
+                <td>${stats.pitch_type}</td>
+              </tr>
+            `;
+          }).join('')}
+        </table>
+      `;
+      gameStatsDiv.innerHTML = statsHtml;  
+      gameSelect.style.display = 'none';
+    });
+  </script>
+</body>
+</html>

@@ -15,6 +15,7 @@
     <select name="game_date" id="game-select"></select>
     <input type="submit" value="Get Game Stats">
   </form>
+  <div id="pitch-type-accuracy" style="font-size: 48px; font-weight: bold; position: absolute; top: 0; right: 0; padding: 20px;"></div>
   <div id="game-stats"></div>
 
   <script>
@@ -24,6 +25,7 @@
     const gameForm = document.getElementById('game-form');
     let gameSelect = document.getElementById('game-select');
     let gameStatsDiv = document.getElementById('game-stats');
+    let pitchTypeAccuracyDisplay = document.getElementById('pitch-type-accuracy');
 
     playerForm.addEventListener('submit', async (e) => {
       e.preventDefault();
@@ -63,24 +65,30 @@
       });
       const data = await response.json();
       const gameStats = JSON.parse(data.game_stats); // Parse the JSON object
+      const gameAccuracy = data.game_accuracy
       const statsHtml = `
-        <table style="margin-left: 20px; margin-right: 20px; border-collapse: separate; border-spacing: 2px;">
+        <table style="margin-left: 25px; margin-right: 25 px; border-collapse: separate; border-spacing: 2px;">
           <tr>
             <th>Pitch Count</th>
             <th>Pitch Type</th>
+            <th>Pitch Type Simplified</th>
+            <th>Prediction</th>
           </tr>
           ${gameStats.map((stats, index) => {
             return `
               <tr>
                 <td>Pitch #${index + 1}</td>
                 <td>${stats.pitch_type}</td>
+                <td>${stats.pitch_type_simplified}</td>
+                <td>${stats.pitch_type_predicted}</td>
               </tr>
             `;
           }).join('')}
         </table>
       `;
       gameStatsDiv.innerHTML = statsHtml;  
-      gameSelect.style.display = 'none';
+      pitchTypeAccuracyDisplay.innerText = `Accuracy: ${gameAccuracy * 100}%`;
+      // gameSelect.style.display = 'none';
     });
   </script>
 </body>

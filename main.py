@@ -1,10 +1,12 @@
 import os
 import json
+import signal
 from typing import List
 
 import pandas as pd
 from flask import Flask, jsonify, render_template, request
 from pybaseball import cache, playerid_lookup, statcast_pitcher
+import markdown
 
 DEFAULT_PITCH_VALUE = "fast"
 PITCH_GRAM_SIZE = 3
@@ -12,16 +14,11 @@ PITCH_GRAM_SIZE = 3
 cache.enable()
 app = Flask(__name__)
 
-# List of baseball pitchers
-players = [
-    "Logan Webb",
-    "Corbin Burnes",
-    "Zac Gallen",
-    "Gerrit Cole",
-    "Blake Snell",
-    "Zack Wheeler",
-    "Kodai Senga",
-]
+
+def read_readme():
+    with open("README.md", "r") as file:
+        content = file.read()
+    return markdown.markdown(content)
 
 
 def get_player_id(player_name: str) -> int:
@@ -112,7 +109,19 @@ def naive_predict_pitch_type(game_stats_df: pd.DataFrame) -> list:
 
 @app.route("/")
 def index():
-    return render_template("index.html", players=players)
+    readme_content = read_readme()
+    # List of baseball pitchers
+    players = [
+        "Logan Webb",
+        "Corbin Burnes",
+        "Zac Gallen",
+        "Gerrit Cole",
+        "Blake Snell",
+        "Zack Wheeler",
+        "Kodai Senga",
+    ]
+
+    return render_template("index.html", readme_content=readme_content, players=players)
 
 
 @app.route("/get_player_stats", methods=["POST"])
@@ -123,7 +132,7 @@ def get_player_stats():
     # Get the statcast pitcher data
     selected_player_df = statcast_pitcher(
         start_dt="2023-04-01",
-        end_dt="2024-01-01",
+        end_dt="2023-09-01",
         player_id=selected_player_id,
     )
 
@@ -205,6 +214,12 @@ def get_game_stats():
     )
 
 
+@app.route("/stopServer", methods=["GET"])
+def stopServer():
+    os.kill(os.getpid(), signal.SIGINT)
+    return jsonify({"success": True, "message": "Server is shutting down..."})
+
+
 if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 5000))
+    port = int(os.environ.get("PORT", 5001))
     app.run(host="0.0.0.0", port=port)

@@ -35,6 +35,14 @@
       background-color: #f2f2f2;
     }
 
+    #readme-content {
+      margin: 20px;
+      padding: 20px;
+      border: 1px solid #ccc;
+      background-color: #f9f9f9;
+      text-align: left;
+    }
+
     #accuracy-display {
       font-size: 24px;
       font-weight: bold;
@@ -52,6 +60,8 @@
 <body>
   <div class="container">
     <h1>Select a Baseball Player</h1>
+
+    <!-- Player dropdown menu and selection -->
     <form id="player-form">
       <select name="player" id="player-select">
         {% for player in players %}
@@ -60,11 +70,22 @@
       </select>
       <input type="submit" value="Get Stats">
     </form>
+
+    <!-- README section -->
+    <div id="readme-content">
+      {{readme_content | safe}}
+    </div>
+
+
     <div id="player-stats"></div>
+
+    <!-- Game selection form -->
     <form id="game-form" style="display: none;">
       <select name="game_date" id="game-select"></select>
       <input type="submit" value="Get Game Stats">
     </form>
+
+    <!-- Accuracy display and game stats-->
     <div id="accuracy-display">
       <span id="pitch-type-accuracy"></span><br>
       <span id="naive-accuracy"></span>
@@ -75,6 +96,7 @@
 
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script>
+    const readmeContent = document.getElementById('readme-content');
     const playerForm = document.getElementById('player-form');
     const playerSelect = document.getElementById('player-select');
     const playerStatsDiv = document.getElementById('player-stats');
@@ -88,6 +110,7 @@
 
     playerForm.addEventListener('submit', async (e) => {
       e.preventDefault();
+      readmeContent.style.display = 'none'; // Hides README content
       const selectedPlayer = playerSelect.value;
       const response = await fetch('/get_player_stats', {
         method: 'POST',

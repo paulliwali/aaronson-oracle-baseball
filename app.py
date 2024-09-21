@@ -103,6 +103,12 @@ def predict_pitch_type(game_stats_df: pd.DataFrame, gram_size: int) -> list:
     return predicted_pitch
 
 
+def naive_predict_pitch_type(game_stats_df: pd.DataFrame) -> list:
+    """Naïve algorithm that always predicts the default pitch type."""
+    predicted_pitch = [DEFAULT_PITCH_VALUE] * len(game_stats_df)
+    return predicted_pitch
+
+
 @app.route("/")
 def index():
     return render_template("index.html", players=players)
@@ -130,6 +136,19 @@ def get_player_stats():
     )
 
 
+def calculate_rolling_accuracy(is_correct_series: pd.Series) -> list:
+    """Calculate rolling accuracy over the series."""
+    correct_count = 0
+    rolling_accuracy = []
+
+    for i, is_correct in enumerate(is_correct_series, start=1):
+        if is_correct:
+            correct_count += 1
+        rolling_accuracy.append(correct_count / i)
+
+    return rolling_accuracy
+
+
 @app.route("/get_game_stats", methods=["POST"])
 def get_game_stats():
     selected_player = request.form["selected_player"]
@@ -148,21 +167,39 @@ def get_game_stats():
     # Map Statscast pitch type to simpler version
     game_stats_df = map_pitch_type(game_stats_df=game_stats_df)
 
-    # Predict
+    # Predict with the algorithm
     game_stats_df["pitch_type_predicted"] = predict_pitch_type(
         game_stats_df=game_stats_df, gram_size=PITCH_GRAM_SIZE
     )
-
     game_stats_df["is_correct"] = (
         game_stats_df["pitch_type_predicted"] == game_stats_df["pitch_type_simplified"]
     )
+    model_accuracy = round(sum(game_stats_df["is_correct"]) / len(game_stats_df), 4)
 
-    game_accuracy = round(sum(game_stats_df["is_correct"]) / len(game_stats_df), 4)
+    # Predict with the naive algorithm
+    game_stats_df["pitch_type_naive"] = naive_predict_pitch_type(
+        game_stats_df=game_stats_df
+    )
+    game_stats_df["is_naive_correct"] = (
+        game_stats_df["pitch_type_naive"] == game_stats_df["pitch_type_simplified"]
+    )
+    naive_accuracy = round(
+        sum(game_stats_df["is_naive_correct"]) / len(game_stats_df), 4
+    )
+
+    # Calculate rolling accuracies
+    model_rolling_accuracy = calculate_rolling_accuracy(game_stats_df["is_correct"])
+    naive_rolling_accuracy = calculate_rolling_accuracy(
+        game_stats_df["is_naive_correct"]
+    )
 
     return jsonify(
         {
             "game_stats": game_stats_df.to_json(orient="records"),
-            "game_accuracy": game_accuracy,
+            "model_accuracy": model_accuracy,
+            "naive_accuracy": naive_accuracy,
+            "model_rolling_accuracy": model_rolling_accuracy,
+            "naive_rolling_accuracy": naive_rolling_accuracy,
         }
     )
 

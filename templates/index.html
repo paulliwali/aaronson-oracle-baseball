@@ -1,23 +1,79 @@
 <!DOCTYPE html>
 <html>
-<body>
-  <h1>Select a Baseball Player</h1>
-  <form id="player-form">
-    <select name="player" id="player-select">
-      {% for player in players %}
-        <option value="{{ player }}">{{ player }}</option>
-      {% endfor %}
-    </select>
-    <input type="submit" value="Get Stats">
-  </form>
-  <div id="player-stats"></div>
-  <form id="game-form" style="display: none;">
-    <select name="game_date" id="game-select"></select>
-    <input type="submit" value="Get Game Stats">
-  </form>
-  <div id="pitch-type-accuracy" style="font-size: 48px; font-weight: bold; position: absolute; top: 0; right: 0; padding: 20px;"></div>
-  <div id="game-stats"></div>
 
+<head>
+  <meta charset="UTF-8">
+  <title>Aaronson Oracle Baseball</title>
+  <style>
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    h1 {
+      text-align: center;
+    }
+
+    .container {
+      width: 80%;
+      margin: auto;
+      text-align: center;
+    }
+
+    table {
+      width: 100%;
+      margin: 20px auto;
+      border-collapse: collapse;
+    }
+
+    th,
+    td {
+      border: 1px solid #ddd;
+      padding: 8px;
+    }
+
+    th {
+      background-color: #f2f2f2;
+    }
+
+    #accuracy-display {
+      font-size: 24px;
+      font-weight: bold;
+      padding: 20px;
+    }
+
+    canvas {
+      max-width: 1200px;
+      height: 600px;
+      margin: 20px auto;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <h1>Select a Baseball Player</h1>
+    <form id="player-form">
+      <select name="player" id="player-select">
+        {% for player in players %}
+        <option value="{{ player }}">{{ player }}</option>
+        {% endfor %}
+      </select>
+      <input type="submit" value="Get Stats">
+    </form>
+    <div id="player-stats"></div>
+    <form id="game-form" style="display: none;">
+      <select name="game_date" id="game-select"></select>
+      <input type="submit" value="Get Game Stats">
+    </form>
+    <div id="accuracy-display">
+      <span id="pitch-type-accuracy"></span><br>
+      <span id="naive-accuracy"></span>
+    </div>
+    <div><canvas id="pitchChart"></canvas></div>
+    <div id="game-stats"></div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script>
     const playerForm = document.getElementById('player-form');
     const playerSelect = document.getElementById('player-select');
@@ -26,6 +82,9 @@
     let gameSelect = document.getElementById('game-select');
     let gameStatsDiv = document.getElementById('game-stats');
     let pitchTypeAccuracyDisplay = document.getElementById('pitch-type-accuracy');
+    let naiveAccuracyDisplay = document.getElementById('naive-accuracy');
+    const ctx = document.getElementById('pitchChart').getContext('2d');
+    let chart;
 
     playerForm.addEventListener('submit', async (e) => {
       e.preventDefault();
@@ -65,31 +124,76 @@
       });
       const data = await response.json();
       const gameStats = JSON.parse(data.game_stats); // Parse the JSON object
-      const gameAccuracy = data.game_accuracy
+      const gameAccuracy = data.model_accuracy;
+      const naiveAccuracy = data.naive_accuracy;
+
       const statsHtml = `
-        <table style="margin-left: 25px; margin-right: 25 px; border-collapse: separate; border-spacing: 2px;">
+        <table>
           <tr>
             <th>Pitch Count</th>
             <th>Pitch Type</th>
             <th>Pitch Type Simplified</th>
-            <th>Prediction</th>
+            <th>Model Prediction</th>
+            <th>Naive Prediction</th>
           </tr>
           ${gameStats.map((stats, index) => {
-            return `
+        return `
               <tr>
                 <td>Pitch #${index + 1}</td>
                 <td>${stats.pitch_type}</td>
                 <td>${stats.pitch_type_simplified}</td>
                 <td>${stats.pitch_type_predicted}</td>
+                <td>${stats.pitch_type_naive}</td>
               </tr>
             `;
-          }).join('')}
+      }).join('')}
         </table>
       `;
-      gameStatsDiv.innerHTML = statsHtml;  
-      pitchTypeAccuracyDisplay.innerText = `Accuracy: ${gameAccuracy * 100}%`;
-      // gameSelect.style.display = 'none';
+      gameStatsDiv.innerHTML = statsHtml;
+      pitchTypeAccuracyDisplay.innerText = `Model Accuracy: ${(gameAccuracy * 100).toFixed(2)}%`;
+      naiveAccuracyDisplay.innerText = `Naive Accuracy: ${(naiveAccuracy * 100).toFixed(2)}%`;
+
+      // Chart visualization
+      const labels = gameStats.map((_, index) => `Pitch #${index + 1}`);
+      const modelRollingAccuracy = data.model_rolling_accuracy.map(acc => (acc * 100).toFixed(2));
+      const naiveRollingAccuracy = data.naive_rolling_accuracy.map(acc => (acc * 100).toFixed(2));
+
+      if (chart) {
+        chart.destroy();
+      }
+      chart = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: labels,
+          datasets: [{
+            label: 'Model Rolling Accuracy (%)',
+            data: modelRollingAccuracy,
+            borderColor: 'rgba(75, 192, 192, 1)',
+            borderWidth: 2,
+            fill: false
+          }, {
+            label: 'Naive Rolling Accuracy (%)',
+            data: naiveRollingAccuracy,
+            borderColor: 'rgba(255, 99, 132, 1)',
+            borderWidth: 2,
+            fill: false
+          }]
+        },
+        options: {
+          scales: {
+            y: {
+              beginAtZero: true,
+              ticks: {
+                callback: function (value) {
+                  return value + '%';
+                }
+              }
+            }
+          }
+        }
+      });
     });
   </script>
 </body>
+
 </html>

@@ -3,3 +3,4 @@ numpy==2.1.1
 pandas==2.2.3
 pybaseball==2.2.7
 gunicorn==23.0.0
+markdown==3.7

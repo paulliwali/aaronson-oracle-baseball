@@ -1,6 +1,8 @@
+# README
+
 Adapting [Aaronson's Oracle](https://github.com/elsehow/aaronson-oracle/blob/master/README.md) to predict a starting pitcher's next baseball pitch.
 
-The idea is to use a simple algorithm of remembering the most probable next thing given the past n combinations to make a *surprisingly* good prediction.
+The idea is to use a simple algorithm of remembering the most probable next thing given the past n combinations to make a *surprisingly* good prediction.z
 
 ## Pseudo-code
 
@@ -13,30 +15,29 @@ The idea is to use a simple algorithm of remembering the most probable next thin
 
 ## Statscast Pitch Types
 
-- CH: changeup
-- CU: curveball
-- FC: cutter 
-- EP: eephus
-- FO: forkball 
-- FF: four-seam fastball 
-- KN: knuckleball 
-- KC: knuck curve
-- SC: screwball
-- SI: sinker
-- SL: slider
-- SV: slurve
-- FS: splitter 
-- ST: sweeper
+* CH: changeup
+* CU: curveball
+* FC: cutter
+* EP: eephus
+* FO: forkball
+* FF: four-seam fastball
+* KN: knuckleball
+* KC: knuck curve
+* SC: screwball
+* SI: sinker
+* SL: slider
+* SV: slurve
+* FS: splitter
+* ST: sweeper
 
-Convert to three categories of "fast", "breaking", "off-speed". 
+Convert to three categories of "fast", "breaking", "off-speed".
 
 ## Run
 
-`python app.py` and navigate to http://127.0.0.1:5000
-
+`python app.py` and navigate to <http://127.0.0.1:5000>
 
 ## TODO
- 
-- [ ] How does the naive prediction do, guess "fast" for all
-- [ ] How does random guessing with weighted percentages do
-- [ ] Calculate the rolling prediction 
+
+* [ ] How does the naive prediction do, guess "fast" for all
+* [ ] How does random guessing with weighted percentages do
+* [ ] Calculate the rolling prediction

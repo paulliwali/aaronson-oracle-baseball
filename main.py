@@ -1,3 +1,5 @@
+"""Main entry point to the app"""
+
 import os
 import json
 import signal
@@ -8,27 +10,34 @@ from flask import Flask, jsonify, render_template, request
 from pybaseball import cache, playerid_lookup, statcast_pitcher
 import markdown
 
-DEFAULT_PITCH_VALUE = "fast"
-PITCH_GRAM_SIZE = 3
+from constants import (
+    CACHE_DIR,
+    CACHE_FILE_FORMAT,
+    DEFAULT_PITCH_VALUE,
+    PITCH_GRAM_SIZE,
+    START_DT,
+    END_DT,
+)
 
 cache.enable()
 app = Flask(__name__)
 
 
-def read_readme():
+def read_readme() -> str:
+    """Parse the content of the readme markdown file"""
     with open("README.md", "r") as file:
         content = file.read()
     return markdown.markdown(content)
 
 
 def get_player_id(player_name: str) -> int:
-    """Get the Statscast player ID given the player name"""
+    """Get the Statcast player ID given the player name"""
 
     selected_player_last_name = player_name.split(" ")[1]
     selected_player_first_name = player_name.split(" ")[0]
     print(f"You selected: {selected_player_last_name}, {selected_player_first_name}")
 
-    # Get the statscast playerID
+    # Get the Statcast playerID
     playerid_lookup_df = playerid_lookup(
         last=selected_player_last_name, first=selected_player_first_name
     )
@@ -37,7 +46,7 @@ def get_player_id(player_name: str) -> int:
 
 
 def map_pitch_type(game_stats_df: pd.DataFrame) -> pd.DataFrame:
-    """Map the Statscast pitch type to a simplified version"""
+    """Map the Statcast pitch type to a simplified version"""
     with open("data/pitch_map.json", "r") as f:
         pitch_map = json.load(f)
 
@@ -107,9 +116,34 @@ def naive_predict_pitch_type(game_stats_df: pd.DataFrame) -> list:
     return predicted_pitch
 
 
+def fetch_and_cache_player_stats(
+    player_id: int, start_dt: str, end_dt: str
+) -> pd.DataFrame:
+    """Fetch and cache the player stats, read from cache if its available"""
+    cache_filename = os.path.join(
+        CACHE_DIR,
+        CACHE_FILE_FORMAT.format(player_id=player_id, start_dt=start_dt, end_dt=end_dt),
+    )
+
+    # Check if the cache file exists
+    if os.path.exists(cache_filename):
+        return pd.read_parquet(cache_filename)
+    selected_player_df = statcast_pitcher(
+        player_id=player_id,
+        start_dt=start_dt,
+        end_dt=end_dt,
+    )
+
+    # Cache the file as parquet
+    selected_player_df.to_parquet(cache_filename, engine="pyarrow")
+
+    return selected_player_df
+
+
 @app.route("/")
 def index():
     readme_content = read_readme()
+
     # List of baseball pitchers
     players = [
         "Logan Webb",
@@ -129,14 +163,12 @@ def get_player_stats():
     selected_player = request.form["player"]
     selected_player_id = get_player_id(player_name=selected_player)
 
-    # Get the statcast pitcher data
-    selected_player_df = statcast_pitcher(
-        start_dt="2023-04-01",
-        end_dt="2023-09-01",
+    # Get the Statcast pitcher data
+    selected_player_df = fetch_and_cache_player_stats(
         player_id=selected_player_id,
+        start_dt=START_DT,
+        end_dt=END_DT,
     )
-
-    print(f"Finished fetching {len(selected_player_df)} rows of data")
 
     return jsonify(
         {
@@ -174,7 +206,7 @@ def get_game_stats():
     )
     print(f"Finished fetching {len(game_stats_df)} rows of single-game data")
 
-    # Map Statscast pitch type to simpler version
+    # Map Statcast pitch type to simpler version
     game_stats_df = map_pitch_type(game_stats_df=game_stats_df)
 
     # Predict with the algorithm
@@ -221,5 +253,8 @@ def stopServer():
 
 
 if __name__ == "__main__":
+    if not os.path.exists(CACHE_DIR):
+        os.makedirs(CACHE_DIR, exist_ok=True)
+
     port = int(os.environ.get("PORT", 5001))
     app.run(host="0.0.0.0", port=port)

@@ -1,0 +1,21 @@
+version: "3.8"
+
+services:
+  redis: 
+    image: "redis:alpine"
+    container_name: redis 
+    ports: 
+      - "6379:6379" 
+
+  flask_app:
+    build: . 
+    container_name: flask_app
+    command: python main.py 
+    ports: 
+      - "5001:5001" 
+    volumes: 
+      - .:/app # Mount the current directory to the container for live changes 
+    environment:
+      REDIS_URL: "redis://redis:6379/0"
+    depends_on:
+      - redis 

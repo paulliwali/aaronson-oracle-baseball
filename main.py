@@ -3,15 +3,15 @@
 import os
 import json
 import signal
+import redis
 from typing import List
 
 import pandas as pd
 from flask import Flask, jsonify, render_template, request
-from pybaseball import cache, playerid_lookup, statcast_pitcher
+from pybaseball import playerid_lookup, statcast_pitcher
 import markdown
 
 from constants import (
-    CACHE_DIR,
     CACHE_FILE_FORMAT,
     DEFAULT_PITCH_VALUE,
     PITCH_GRAM_SIZE,
@@ -19,8 +19,11 @@ from constants import (
     END_DT,
 )
 
-cache.enable()
 app = Flask(__name__)
+
+# Connect to redis
+redis_url = os.getenv("REDIS_URL")
+cache = redis.StrictRedis.from_url(redis_url, decode_responses=True)
 
 
 def read_readme() -> str:
@@ -120,23 +123,21 @@ def fetch_and_cache_player_stats(
     player_id: int, start_dt: str, end_dt: str
 ) -> pd.DataFrame:
     """Fetch and cache the player stats, read from cache if its available"""
-    cache_filename = os.path.join(
-        CACHE_DIR,
-        CACHE_FILE_FORMAT.format(player_id=player_id, start_dt=start_dt, end_dt=end_dt),
+    cache_key = CACHE_FILE_FORMAT.format(
+        player_id=player_id, start_dt=start_dt, end_dt=end_dt
     )
 
-    # Check if the cache file exists
-    if os.path.exists(cache_filename):
-        return pd.read_parquet(cache_filename)
+    cache_data = cache.get(cache_key)
+    if cache_data:
+        return pd.read_json(cache_data)
+
     selected_player_df = statcast_pitcher(
         player_id=player_id,
         start_dt=start_dt,
         end_dt=end_dt,
     )
 
-    # Cache the file as parquet
-    selected_player_df.to_parquet(cache_filename, engine="pyarrow")
-
+    cache.set(cache_key, selected_player_df.to_json(orient="records"), ex=86400)
     return selected_player_df
 
 
@@ -253,8 +254,5 @@ def stopServer():
 
 
 if __name__ == "__main__":
-    if not os.path.exists(CACHE_DIR):
-        os.makedirs(CACHE_DIR, exist_ok=True)
-
     port = int(os.environ.get("PORT", 5001))
-    app.run(host="0.0.0.0", port=port)
+    app.run(host="0.0.0.0", port=port, debug=True)

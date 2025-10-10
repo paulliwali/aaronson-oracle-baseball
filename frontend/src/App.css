@@ -1,0 +1,278 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Comic Sans MS', 'Chalkboard SE', 'Comic Neue', cursive, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.app {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #4CAF50 0%, #2E7D32 100%);
+  color: #333;
+}
+
+.app-header {
+  background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+  padding: 2rem;
+  text-align: center;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+  border-bottom: 5px solid #FF6B35;
+}
+
+.app-header h1 {
+  font-size: 3rem;
+  margin-bottom: 0.5rem;
+  color: #D32F2F;
+  text-shadow: 3px 3px 0px #FFF176, 5px 5px 0px rgba(0, 0, 0, 0.2);
+  font-weight: 900;
+  letter-spacing: 2px;
+}
+
+.app-header p {
+  font-size: 1.2rem;
+  color: #1976D2;
+  font-weight: 700;
+  text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.8);
+}
+
+.app-main {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.controls {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+}
+
+.selector {
+  flex: 1;
+  min-width: 250px;
+}
+
+.selector label {
+  display: block;
+  margin-bottom: 0.75rem;
+  font-weight: 600;
+  color: white;
+  font-size: 1.05rem;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.selector select {
+  width: 100%;
+  padding: 1rem 1.25rem;
+  font-size: 1.1rem;
+  font-weight: 700;
+  border: 4px solid #FF6B35;
+  border-radius: 15px;
+  background: #FFEB3B;
+  color: #1976D2;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 6px 0 #FFA500, 0 8px 20px rgba(0, 0, 0, 0.3);
+  appearance: none;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23D32F2F' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 1rem center;
+  background-size: 1.5rem;
+  padding-right: 3rem;
+}
+
+.selector select:hover:not(:disabled) {
+  border-color: #D32F2F;
+  box-shadow: 0 4px 0 #FF6B35, 0 6px 25px rgba(0, 0, 0, 0.4);
+  transform: translateY(2px);
+  background: #FFF176;
+}
+
+.selector select:focus {
+  outline: none;
+  border-color: #1976D2;
+  box-shadow: 0 6px 0 #2196F3, 0 0 0 4px rgba(33, 150, 243, 0.3);
+}
+
+.selector select:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background: rgba(255, 255, 255, 0.7);
+  transform: none;
+}
+
+.error-message {
+  background: #FF5252;
+  color: white;
+  padding: 1.5rem;
+  border-radius: 15px;
+  margin-bottom: 1rem;
+  border: 4px solid #D32F2F;
+  box-shadow: 0 4px 0 #B71C1C;
+  font-weight: 700;
+  font-size: 1.1rem;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.loading {
+  text-align: center;
+  padding: 2rem;
+  font-size: 1.5rem;
+  color: #FFEB3B;
+  font-weight: 900;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.model-comparison {
+  background: linear-gradient(135deg, #FFF9C4 0%, #FFECB3 100%);
+  padding: 2rem;
+  border-radius: 20px;
+  box-shadow: 0 8px 0 #FFA500, 0 10px 30px rgba(0, 0, 0, 0.3);
+  border: 5px solid #FF6B35;
+}
+
+.model-comparison h2 {
+  margin-bottom: 1.5rem;
+  color: #D32F2F;
+  border-bottom: 5px solid #2196F3;
+  padding-bottom: 0.5rem;
+  font-size: 2rem;
+  text-shadow: 2px 2px 0px #FFF176;
+}
+
+.model-comparison h3 {
+  margin-top: 2rem;
+  margin-bottom: 1rem;
+  color: #1976D2;
+  font-size: 1.5rem;
+  text-shadow: 1px 1px 0px #FFF176;
+}
+
+.game-info {
+  display: flex;
+  gap: 2rem;
+  margin-bottom: 1.5rem;
+  padding: 1.5rem;
+  background: linear-gradient(135deg, #81C784 0%, #66BB6A 100%);
+  border-radius: 15px;
+  border: 4px solid #388E3C;
+  box-shadow: 0 4px 0 #2E7D32;
+  color: white;
+  font-weight: 700;
+}
+
+.game-info p {
+  margin: 0;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.distribution-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.distribution-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 1rem;
+  background: #FFEB3B;
+  border-radius: 12px;
+  border: 3px solid #FFA500;
+  box-shadow: 0 4px 0 #FF6B35;
+  font-weight: 700;
+  color: #D32F2F;
+}
+
+.pitch-type {
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.pitch-count {
+  color: #666;
+}
+
+.accuracy-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 2rem;
+}
+
+.accuracy-table th,
+.accuracy-table td {
+  padding: 0.75rem;
+  text-align: left;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.accuracy-table th {
+  background: #f8f9fa;
+  font-weight: 600;
+  color: #667eea;
+}
+
+.accuracy-table tr:hover {
+  background: #f8f9fa;
+}
+
+.pitch-predictions-chart {
+  margin-top: 2rem;
+  padding: 1.5rem;
+  background: linear-gradient(135deg, #E3F2FD 0%, #BBDEFB 100%);
+  border-radius: 15px;
+  border: 4px solid #2196F3;
+  box-shadow: 0 4px 0 #1976D2;
+}
+
+.pitch-legend {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  margin-top: 1rem;
+  padding: 1rem;
+  font-weight: 700;
+  color: #1976D2;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.legend-dot {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  display: inline-block;
+  border: 2px solid #333;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.rolling-accuracy-chart {
+  margin-top: 2rem;
+  padding: 1.5rem;
+  background: linear-gradient(135deg, #F3E5F5 0%, #E1BEE7 100%);
+  border-radius: 15px;
+  border: 4px solid #9C27B0;
+  box-shadow: 0 4px 0 #7B1FA2;
+}
+
+@media (max-width: 768px) {
+  .controls {
+    flex-direction: column;
+  }
+
+  .game-info {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+}

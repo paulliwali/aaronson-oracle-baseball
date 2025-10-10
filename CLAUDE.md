@@ -10,7 +10,8 @@ The application uses:
 - **Backend**: FastAPI (Python) for REST API
 - **Frontend**: React + Vite for visualization
 - **Data**: PyBaseball (Statcast API) for MLB pitch data
-- **Caching**: Redis for API response caching
+- **Database**: PostgreSQL for permanent storage of Statcast data
+- **Caching**: Redis for fast access to recent queries
 
 Pitch types are simplified from Statcast's detailed categories into three groups: "fast", "breaking", and "off-speed" (see `data/pitch_map.json`).
 
@@ -148,8 +149,32 @@ The `ModelComparison` component displays:
 10. Backend runs all models in `AVAILABLE_MODELS` and collects performance metrics
 11. Frontend renders interactive charts comparing model accuracies and predictions
 
+### 3-Tier Caching Strategy
+
+The application uses a 3-tier data caching strategy to minimize API calls and improve performance:
+
+1. **PostgreSQL (Tier 1 - Permanent Storage)**
+   - All Statcast data is permanently stored in Postgres
+   - Tables: `statcast_pitches` (pitch-by-pitch data), `pitcher_game_cache` (tracking)
+   - Checked first for every request
+   - Models: `app/models/database.py`
+
+2. **Redis (Tier 2 - Hot Cache)**
+   - Recently accessed games cached for 1 hour
+   - Fast in-memory lookups for repeated queries
+   - Checked if data not found in Postgres
+   - Data is saved to Postgres when loaded from Redis
+
+3. **Statcast API (Tier 3 - Source of Truth)**
+   - Fetched only if data not in Postgres or Redis
+   - Automatically saved to both Postgres and Redis after fetching
+   - Rate-limited by MLB, so minimizing calls is important
+
+**Data Flow:** `fetch_game_stats()` checks Postgres → Redis → API and saves back down the chain.
+
 ### Environment Variables
 
+- `DATABASE_URL`: PostgreSQL connection string (defaults to `postgresql://localhost/aaronson_oracle_baseball`)
 - `REDIS_URL`: Redis connection string (defaults to `redis://localhost:6379`)
 - `PORT`: Backend server port (defaults to 8000)
 

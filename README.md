@@ -23,7 +23,8 @@ The application uses n-gram pattern matching and other algorithms to predict a s
 - **Backend**: FastAPI (Python) with Pydantic validation
 - **Frontend**: React + Vite with Recharts for visualizations
 - **Data**: PyBaseball (Statcast API) for MLB pitch-by-pitch data
-- **Caching**: Redis for optimized API response times
+- **Database**: PostgreSQL for permanent storage of Statcast data
+- **Caching**: Redis for fast access to frequently requested games
 
 ## Getting Started
 
@@ -31,7 +32,8 @@ The application uses n-gram pattern matching and other algorithms to predict a s
 
 - Python 3.10+
 - Node.js 16+
-- Redis server
+- PostgreSQL 12+ (for permanent data storage)
+- Redis server (for caching)
 
 ### Installation
 
@@ -54,7 +56,16 @@ The application uses n-gram pattern matching and other algorithms to predict a s
    npm install
    ```
 
-4. **Start Redis** (if not already running)
+4. **Set up PostgreSQL database**
+   ```bash
+   # Create database
+   createdb aaronson_oracle_baseball
+
+   # Or set DATABASE_URL environment variable for custom connection
+   export DATABASE_URL="postgresql://user:password@localhost/dbname"
+   ```
+
+5. **Start Redis** (if not already running)
    ```bash
    redis-server
    # Or on macOS with Homebrew
@@ -95,6 +106,22 @@ The app automatically determines which team the pitcher plays for by analyzing t
 - **Bottom of inning**: Home team batting → Away team pitching
 
 This allows the UI to display the full matchup context (e.g., "Logan Webb (SF) - SD @ SF").
+
+### 3-Tier Data Caching
+
+The application uses a smart 3-tier caching strategy to minimize API calls:
+
+1. **PostgreSQL** - Permanent storage of all fetched Statcast data
+2. **Redis** - Fast in-memory cache for recently accessed games (1 hour TTL)
+3. **Statcast API** - Source of truth, only called when data not in database
+
+When you request a game, the system:
+- First checks PostgreSQL (instant if previously fetched)
+- Falls back to Redis if not in database
+- Only calls the Statcast API as a last resort
+- Saves all new data to both PostgreSQL and Redis
+
+This means the first request for a game might take a few seconds, but subsequent requests are nearly instant!
 
 ### Prediction Algorithm (N-Gram)
 
@@ -182,8 +209,11 @@ AVAILABLE_MODELS.append(MyCustomPredictor())
 
 ## Environment Variables
 
+- `DATABASE_URL`: PostgreSQL connection string (default: `postgresql://localhost/aaronson_oracle_baseball`)
 - `REDIS_URL`: Redis connection string (default: `redis://localhost:6379`)
 - `PORT`: Backend server port (default: `8000`, Railway sets this automatically)
+
+**Note**: The application will work without Redis (falling back to database + API), but performance will be better with Redis enabled.
 
 ## Deployment
 

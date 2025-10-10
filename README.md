@@ -183,7 +183,37 @@ AVAILABLE_MODELS.append(MyCustomPredictor())
 ## Environment Variables
 
 - `REDIS_URL`: Redis connection string (default: `redis://localhost:6379`)
-- `PORT`: Backend server port (default: `8000`)
+- `PORT`: Backend server port (default: `8000`, Railway sets this automatically)
+
+## Deployment
+
+The application is deployed as a single service where FastAPI serves both the API and React frontend.
+
+### Railway Deployment
+
+The Dockerfile is configured to:
+1. Install Node.js and build the React frontend
+2. Install Python dependencies
+3. Serve frontend static files from FastAPI
+
+**Deployment URLs:**
+- Frontend: `https://your-app.railway.app/`
+- API: `https://your-app.railway.app/api/*`
+- API Docs: `https://your-app.railway.app/docs`
+
+The frontend automatically uses relative URLs (`/api`) in production, so no environment variables needed for the frontend.
+
+### Manual Deployment
+
+To deploy elsewhere:
+```bash
+# Build frontend
+cd frontend && npm run build
+
+# Run with Docker
+docker build -t aaronson-oracle-baseball .
+docker run -p 8000:8000 -e REDIS_URL=your-redis-url aaronson-oracle-baseball
+```
 
 ## Development
 

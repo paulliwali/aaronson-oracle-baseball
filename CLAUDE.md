@@ -27,9 +27,11 @@ pip install -e ".[dev]"   # Install with dev dependencies
 Run the FastAPI server:
 ```bash
 cd backend
-python run.py
+python3 run.py
 ```
 The API will be available at http://localhost:8000 with interactive docs at http://localhost:8000/docs
+
+**Note**: Use `python3` instead of `python` on macOS/Linux.
 
 ### Frontend
 
@@ -97,7 +99,14 @@ To add a new model:
 
 **POST** `/api/predictions/game`
 - Body: `{"player_name": "Logan Webb", "game_date": "2023-05-15"}`
-- Returns: Performance metrics for all models on that specific game
+- Returns: Performance metrics for all models on that specific game, including:
+  - `home_team`: Home team abbreviation (e.g., "SF")
+  - `away_team`: Away team abbreviation (e.g., "LAD")
+  - `pitcher_team`: Pitcher's team (determined from `inning_topbot` field)
+  - `total_pitches`: Number of pitches thrown
+  - `pitch_types_distribution`: Count of each pitch type
+  - `actual_pitches`: List of actual pitch types thrown
+  - `models`: Array of model performance data
 
 ### Frontend Structure (React)
 
@@ -112,21 +121,32 @@ frontend/src/
 ```
 
 The `ModelComparison` component displays:
-- Game metadata (pitcher, date, total pitches)
-- Pitch type distribution
-- Final accuracy table for all models
-- Rolling accuracy line chart showing model performance over the course of the game
+- Game metadata (pitcher with team affiliation, date, home vs away matchup, total pitches)
+- Pitch type distribution (fast, breaking, off-speed)
+- Scatter plot showing pitch predictions vs actual pitches for each model
+- Rolling accuracy line chart showing model performance progression over the game
+
+**UI Theme**: Vibrant "Backyard Baseball" aesthetic with:
+- Comic Sans font for playful feel
+- Bright, saturated colors (greens, yellows, oranges, blues)
+- Bold borders and 3D shadow effects
+- High-contrast charts with thick lines (4px) for readability
 
 ### Data Flow
 
 1. Frontend fetches player list from `/api/players/list`
-2. User selects pitcher → Frontend calls `/api/players/stats`
-3. Backend uses `playerid_lookup()` to get Statcast player ID
-4. Backend fetches season data via `statcast_pitcher()` (cached in Redis, 24hr TTL)
-5. User selects game date → Frontend calls `/api/predictions/game`
-6. Backend fetches single-game data and maps pitch types via `data/pitch_map.json`
-7. Backend runs all models in `AVAILABLE_MODELS` and collects performance metrics
-8. Frontend renders interactive chart comparing model accuracies
+2. Both player and game date dropdowns are visible (game dropdown disabled until player selected)
+3. User selects pitcher → Frontend calls `/api/players/stats`
+4. Backend uses `playerid_lookup()` to get Statcast player ID
+5. Backend fetches season data via `statcast_pitcher()` (cached in Redis, 24hr TTL)
+6. User selects game date → Frontend calls `/api/predictions/game`
+7. Backend fetches single-game data and maps pitch types via `data/pitch_map.json`
+8. Backend extracts team info (`home_team`, `away_team`) from DataFrame
+9. Backend determines pitcher's team using `inning_topbot` field:
+   - `"Top"` = away team batting → home team pitching
+   - `"Bot"` = home team batting → away team pitching
+10. Backend runs all models in `AVAILABLE_MODELS` and collects performance metrics
+11. Frontend renders interactive charts comparing model accuracies and predictions
 
 ### Environment Variables
 

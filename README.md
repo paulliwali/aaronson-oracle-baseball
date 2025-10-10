@@ -1,42 +1,201 @@
-# README
+# Aaronson Oracle Baseball
 
-Adapting [Aaronson's Oracle](https://github.com/elsehow/aaronson-oracle/blob/master/README.md) to predict a starting pitcher's next baseball pitch.
+A full-stack web application that adapts [Aaronson's Oracle](https://github.com/elsehow/aaronson-oracle/blob/master/README.md) algorithm to predict baseball pitches. Compare multiple prediction models to determine which algorithm best anticipates a pitcher's next pitch type.
 
-The idea is to use a simple algorithm of remembering the most probable next thing given the past n combinations to make a *surprisingly* good prediction.
+![Baseball Pitch Prediction](https://img.shields.io/badge/Python-3.10+-blue.svg)
+![FastAPI](https://img.shields.io/badge/FastAPI-0.115+-green.svg)
+![React](https://img.shields.io/badge/React-18+-61dafb.svg)
 
-## Pseudo-code
+## Overview
 
-1. Fetch a starting pitchers game's pitch by pitch log using `pybaseball`
-    * Gets Statscast data which categorizes each pitch type
-1. Initialize a dictionary that will store a n-gram combination as the key and the number of times each pitch type that follows this n-gram combination as dict of values
-1. Record the rolling n-gram combination as you iterate through the pitch log
-1. Update the dictionary with the actual next pitch
-1. Look up the highest pitch type value, return that or default to one by chance if there are no stored values as the prediction
+The application uses n-gram pattern matching and other algorithms to predict a starting pitcher's next pitch based on their recent pitch history. Pitch predictions are visualized alongside rolling accuracy metrics to show how each model performs throughout a game.
 
-### Statscast Pitch Types
+### Key Features
 
-* CH: changeup
-* CU: curveball
-* FC: cutter
-* EP: eephus
-* FO: forkball
-* FF: four-seam fastball
-* KN: knuckleball
-* KC: knuck curve
-* SC: screwball
-* SI: sinker
-* SL: slider
-* SV: slurve
-* FS: splitter
-* ST: sweeper
+- 📊 **Interactive Visualizations**: Scatter plots showing actual vs predicted pitches, aligned with rolling accuracy charts
+- 🎯 **Multiple Prediction Models**: Compare naive baseline, n-gram (n=3,4), and frequency-based predictors
+- ⚡ **Real-time Analysis**: Analyze any MLB pitcher's game from the 2023 season
+- 🎨 **Colorful UI**: Modern, responsive interface with muted color palette
 
-For simplicity, I converted these to three categories pitches: "fast", "breaking", "off-speed".
+### Tech Stack
 
-## Local development and run
+- **Backend**: FastAPI (Python) with Pydantic validation
+- **Frontend**: React + Vite with Recharts for visualizations
+- **Data**: PyBaseball (Statcast API) for MLB pitch-by-pitch data
+- **Caching**: Redis for optimized API response times
 
-1. install dependencies from `requirements.txt`
-2. Run `python app.py` and navigate to <http://127.0.0.1:5001>
+## Getting Started
 
-## TODO
+### Prerequisites
 
-* [ ] How does random guessing with weighted percentages do
+- Python 3.10+
+- Node.js 16+
+- Redis server
+
+### Installation
+
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/yourusername/aaronson-oracle-baseball.git
+   cd aaronson-oracle-baseball
+   ```
+
+2. **Install Python dependencies**
+   ```bash
+   pip install -e .
+   # Or with dev dependencies
+   pip install -e ".[dev]"
+   ```
+
+3. **Install frontend dependencies**
+   ```bash
+   cd frontend
+   npm install
+   ```
+
+4. **Start Redis** (if not already running)
+   ```bash
+   redis-server
+   # Or on macOS with Homebrew
+   brew services start redis
+   ```
+
+### Running the Application
+
+**Terminal 1 - Backend:**
+```bash
+cd backend
+python run.py
+```
+API available at http://localhost:8000
+Interactive docs at http://localhost:8000/docs
+
+**Terminal 2 - Frontend:**
+```bash
+cd frontend
+npm run dev
+```
+Web app available at http://localhost:5173
+
+## How It Works
+
+### Pitch Type Simplification
+
+Statcast tracks 13+ different pitch types. For simplicity, we consolidate them into three categories:
+
+- **Fast**: FF (four-seam), SI (sinker), FC (cutter), FS (splitter), FO (forkball)
+- **Breaking**: CU (curveball), SL (slider), KC (knuckle curve), SV (slurve), SC (screwball), ST (sweeper), EP (eephus)
+- **Off-Speed**: CH (changeup), KN (knuckleball)
+
+### Prediction Algorithm (N-Gram)
+
+1. Fetch pitch-by-pitch data from Statcast using `pybaseball`
+2. Initialize a dictionary storing n-gram sequences as keys
+3. For each pitch, look at the previous n pitches to form a pattern
+4. Predict the most common pitch type that follows this pattern
+5. Update the model with the actual pitch thrown
+6. Default to "fast" if no historical pattern exists
+
+## Project Structure
+
+```
+aaronson-oracle-baseball/
+├── backend/
+│   ├── app/
+│   │   ├── main.py              # FastAPI app setup
+│   │   ├── models/schemas.py     # Pydantic models
+│   │   ├── routers/              # API endpoints
+│   │   │   ├── players.py
+│   │   │   └── predictions.py
+│   │   └── services/             # Business logic
+│   │       ├── baseball.py       # Data fetching & caching
+│   │       └── predictors.py     # Prediction models
+│   └── run.py                    # Server entry point
+├── frontend/
+│   └── src/
+│       ├── App.jsx               # Main application
+│       └── components/
+│           ├── PlayerSelector.jsx
+│           ├── GameSelector.jsx
+│           └── ModelComparison.jsx  # Charts & viz
+├── data/
+│   └── pitch_map.json            # Pitch type mappings
+└── pyproject.toml                # Python dependencies
+```
+
+## API Endpoints
+
+### `GET /api/players/list`
+Returns list of available pitchers
+
+### `POST /api/players/stats`
+**Request:**
+```json
+{
+  "player_name": "Logan Webb"
+}
+```
+**Response:** Player ID and available game dates
+
+### `POST /api/predictions/game`
+**Request:**
+```json
+{
+  "player_name": "Logan Webb",
+  "game_date": "2023-05-15"
+}
+```
+**Response:** Model predictions, accuracies, and pitch sequences
+
+## Adding New Prediction Models
+
+1. Create a class extending `BasePredictorModel` in `backend/app/services/predictors.py`
+2. Implement the `predict(game_stats_df)` method
+3. Add an instance to the `AVAILABLE_MODELS` list
+
+Example:
+```python
+class MyCustomPredictor(BasePredictorModel):
+    def __init__(self):
+        super().__init__("My Model Name")
+
+    def predict(self, game_stats_df: pd.DataFrame) -> List[str]:
+        # Your prediction logic here
+        return predictions
+
+# Add to registry
+AVAILABLE_MODELS.append(MyCustomPredictor())
+```
+
+## Environment Variables
+
+- `REDIS_URL`: Redis connection string (default: `redis://localhost:6379`)
+- `PORT`: Backend server port (default: `8000`)
+
+## Development
+
+### Build frontend for production
+```bash
+cd frontend
+npm run build
+```
+
+### Run tests (if available)
+```bash
+pip install -e ".[dev]"
+pytest
+```
+
+## Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+## License
+
+MIT License - see LICENSE file for details
+
+## Acknowledgments
+
+- [Aaronson's Oracle](https://github.com/elsehow/aaronson-oracle) - Original n-gram prediction concept
+- [PyBaseball](https://github.com/jldbc/pybaseball) - Statcast data access
+- MLB Statcast - Pitch tracking data

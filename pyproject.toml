@@ -1,0 +1,40 @@
+[project]
+name = "aaronson-oracle-baseball"
+version = "0.1.0"
+description = "Adapting Aaronson's Oracle to predict baseball pitches using n-gram pattern matching"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "fastapi>=0.115.0",
+    "uvicorn[standard]>=0.30.0",
+    "numpy>=2.1.1",
+    "pandas>=2.2.3",
+    "pybaseball>=2.2.7",
+    "redis>=5.0.8",
+    "pydantic>=2.9.0",
+    "python-multipart>=0.0.9",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0.0",
+    "pytest-asyncio>=0.23.0",
+    "black>=24.0.0",
+    "ruff>=0.6.0",
+]
+
+[build-system]
+requires = ["setuptools>=68.0.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.black]
+line-length = 100
+target-version = ["py310", "py311", "py312"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "N", "W", "UP"]
+ignore = ["E501"]

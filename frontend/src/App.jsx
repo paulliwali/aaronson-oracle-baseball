@@ -5,7 +5,10 @@ import GameSelector from './components/GameSelector'
 import ModelComparison from './components/ModelComparison'
 import './App.css'
 
-const API_BASE_URL = 'http://localhost:8000/api'
+// Use relative URL in production, localhost in development
+const API_BASE_URL = import.meta.env.MODE === 'production'
+  ? '/api'
+  : 'http://localhost:8000/api'
 
 function App() {
   const [players, setPlayers] = useState([])

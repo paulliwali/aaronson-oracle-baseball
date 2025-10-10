@@ -2,17 +2,17 @@
 FROM python:3.11-slim
 
 # Set working directory in the container
-WORKDIR /app 
+WORKDIR /app
 
-# Copy requirements.txt and install dependcies
-COPY requirements.txt requirements.txt 
-RUN pip install -r requirements.txt 
+# Copy pyproject.toml and install dependencies
+COPY pyproject.toml .
+RUN pip install -e .
 
-# Copy the rest of the application code 
-COPY . . 
+# Copy the rest of the application code
+COPY . .
 
-# Expose port 5001 for flask 
-EXPOSE 5001 
+# Expose port 8000 for FastAPI
+EXPOSE 8000
 
-# Command to run the flask app 
-CMD ["python", "main.py"]
+# Command to run the FastAPI app
+CMD ["python", "backend/run.py"]

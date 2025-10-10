@@ -2,10 +2,13 @@
 
 import os
 from contextlib import asynccontextmanager
+from pathlib import Path
 
 import redis
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
 
 from app.routers import players, predictions
 
@@ -33,7 +36,7 @@ app = FastAPI(
 # CORS middleware for frontend
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173"],  # Vite default port
+    allow_origins=["*"],  # Allow all origins for production
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -43,8 +46,21 @@ app.add_middleware(
 app.include_router(players.router, prefix="/api", tags=["players"])
 app.include_router(predictions.router, prefix="/api", tags=["predictions"])
 
+# Check if frontend build exists
+frontend_dist = Path(__file__).parent.parent.parent / "frontend" / "dist"
 
-@app.get("/")
-async def root():
-    """Health check endpoint"""
-    return {"status": "ok", "message": "Aaronson Oracle Baseball API"}
+if frontend_dist.exists():
+    # Mount static files (CSS, JS, etc)
+    app.mount("/assets", StaticFiles(directory=str(frontend_dist / "assets")), name="assets")
+
+    # Serve index.html for all non-API routes (SPA catch-all)
+    @app.get("/{full_path:path}")
+    async def serve_spa(full_path: str):
+        """Serve the React SPA for all non-API routes"""
+        if not full_path.startswith("api/"):
+            return FileResponse(str(frontend_dist / "index.html"))
+else:
+    @app.get("/")
+    async def root():
+        """Health check endpoint when frontend not built"""
+        return {"status": "ok", "message": "Aaronson Oracle Baseball API"}

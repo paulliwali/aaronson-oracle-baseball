@@ -1,6 +1,6 @@
 """Prediction-related API endpoints"""
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Request
 
 from app.models.schemas import GamePredictionRequest, GamePredictionResponse, ModelPerformance
 from app.services.baseball import get_player_id, fetch_game_stats
@@ -11,15 +11,19 @@ router = APIRouter()
 
 
 @router.post("/predictions/game", response_model=GamePredictionResponse)
-async def get_game_predictions(prediction_request: GamePredictionRequest):
+async def get_game_predictions(prediction_request: GamePredictionRequest, request: Request):
     """Get predictions for a specific game using all available models"""
     try:
         player_id = get_player_id(prediction_request.player_name)
 
-        # Fetch game stats
+        # Get Redis client from app state
+        redis_client = request.app.state.redis if hasattr(request.app.state, 'redis') else None
+
+        # Fetch game stats (will check Postgres -> Redis -> API)
         game_stats_df = fetch_game_stats(
             player_id=player_id,
             game_date=prediction_request.game_date,
+            redis_client=redis_client,
         )
 
         if game_stats_df.empty:

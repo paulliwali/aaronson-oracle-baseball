@@ -16,14 +16,29 @@ from app.routers import players, predictions
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """Manage application lifecycle"""
+    # Startup: Initialize database tables
+    from app.database import init_db
+    try:
+        init_db()
+        print("✓ Database initialized")
+    except Exception as e:
+        print(f"⚠ Database initialization failed (will retry on first request): {e}")
+
     # Startup: Initialize Redis connection
     redis_url = os.getenv("REDIS_URL", "redis://localhost:6379")
-    app.state.redis = redis.StrictRedis.from_url(redis_url, decode_responses=True)
+    try:
+        app.state.redis = redis.StrictRedis.from_url(redis_url, decode_responses=True)
+        app.state.redis.ping()
+        print("✓ Redis connected")
+    except Exception as e:
+        print(f"⚠ Redis connection failed (will work without cache): {e}")
+        app.state.redis = None
 
     yield
 
     # Shutdown: Close Redis connection
-    app.state.redis.close()
+    if app.state.redis:
+        app.state.redis.close()
 
 
 app = FastAPI(

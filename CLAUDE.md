@@ -158,3 +158,33 @@ The `ModelComparison` component displays:
 Key parameters in `backend/app/services/predictors.py`:
 - `DEFAULT_PITCH_VALUE = "fast"`: Fallback prediction
 - `PITCH_GRAM_SIZE = 3`: Default n-gram window size
+
+## Deployment
+
+### Single-Service Deployment (Railway)
+
+The application is configured for a single-service deployment where FastAPI serves both the API and the React frontend:
+
+**Dockerfile Build Process:**
+1. Installs Node.js 18 in Python 3.11 base image
+2. Builds React frontend (`npm run build` → creates `frontend/dist`)
+3. Installs Python dependencies from `pyproject.toml`
+4. Copies all application code
+
+**FastAPI Static File Serving:**
+- Frontend static assets mounted at `/assets`
+- SPA catch-all route serves `index.html` for all non-API routes
+- API endpoints remain at `/api/*`
+
+**Environment-Aware API URLs:**
+- Production: Frontend uses relative URLs (`/api`)
+- Development: Frontend uses `http://localhost:8000/api`
+
+**Required Environment Variables:**
+- `PORT`: Server port (Railway provides this automatically)
+- `REDIS_URL`: Redis connection string (defaults to `redis://localhost:6379`)
+
+When deployed to Railway, the single service provides:
+- **Frontend**: `https://your-app.railway.app/` (React UI)
+- **API**: `https://your-app.railway.app/api/*` (FastAPI endpoints)
+- **API Docs**: `https://your-app.railway.app/docs` (Swagger UI)

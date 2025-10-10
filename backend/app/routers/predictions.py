@@ -28,6 +28,16 @@ async def get_game_predictions(prediction_request: GamePredictionRequest):
                 detail=f"No data found for {prediction_request.player_name} on {prediction_request.game_date}",
             )
 
+        # Extract team information from the game data
+        home_team = game_stats_df["home_team"].iloc[0] if "home_team" in game_stats_df.columns else "N/A"
+        away_team = game_stats_df["away_team"].iloc[0] if "away_team" in game_stats_df.columns else "N/A"
+
+        # Determine which team the pitcher plays for based on inning_topbot
+        # Top = away team batting, home team pitching
+        # Bot = home team batting, away team pitching
+        inning_topbot = game_stats_df["inning_topbot"].iloc[0] if "inning_topbot" in game_stats_df.columns else None
+        pitcher_team = home_team if inning_topbot == "Top" else away_team if inning_topbot == "Bot" else "N/A"
+
         # Calculate pitch type distribution
         pitch_distribution = game_stats_df["pitch_type_simplified"].value_counts().to_dict()
 
@@ -53,6 +63,9 @@ async def get_game_predictions(prediction_request: GamePredictionRequest):
         return GamePredictionResponse(
             player_name=prediction_request.player_name,
             game_date=prediction_request.game_date,
+            home_team=home_team,
+            away_team=away_team,
+            pitcher_team=pitcher_team,
             total_pitches=len(game_stats_df),
             pitch_types_distribution=pitch_distribution,
             actual_pitches=actual_pitches_list,

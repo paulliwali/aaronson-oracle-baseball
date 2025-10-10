@@ -34,6 +34,9 @@ class GamePredictionResponse(BaseModel):
     """Response containing game predictions and model performance"""
     player_name: str
     game_date: str
+    home_team: str
+    away_team: str
+    pitcher_team: str
     total_pitches: int
     pitch_types_distribution: Dict[str, int]
     actual_pitches: List[str]

@@ -1,16 +1,16 @@
 import PropTypes from 'prop-types'
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, ScatterChart, Scatter, Cell, ReferenceLine, Label } from 'recharts'
 
-// Colorful muted palette
-const MODEL_COLORS = ['#6366f1', '#8b5cf6', '#ec4899', '#f59e0b', '#10b981']
+// Backyard Baseball vibrant palette
+const MODEL_COLORS = ['#D32F2F', '#1976D2', '#388E3C', '#F57C00', '#7B1FA2', '#C2185B']
 const PITCH_TYPE_COLORS = {
-  'fast': '#ef4444',      // bright red
-  'breaking': '#3b82f6',  // bright blue
-  'off-speed': '#22c55e'  // bright green
+  'fast': '#FF5252',      // bright red
+  'breaking': '#2196F3',  // bright blue
+  'off-speed': '#4CAF50'  // bright green
 }
 
 function ModelComparison({ predictions }) {
-  const { player_name, game_date, total_pitches, pitch_types_distribution, actual_pitches, models } = predictions
+  const { player_name, game_date, home_team, away_team, pitcher_team, total_pitches, pitch_types_distribution, actual_pitches, models } = predictions
 
   // Transform data for the rolling accuracy chart
   const chartData = Array.from({ length: total_pitches }, (_, i) => {
@@ -64,8 +64,9 @@ function ModelComparison({ predictions }) {
     <div className="model-comparison">
       <h2>Game Analysis</h2>
       <div className="game-info">
-        <p><strong>Pitcher:</strong> {player_name}</p>
+        <p><strong>Pitcher:</strong> {player_name} ({pitcher_team})</p>
         <p><strong>Date:</strong> {new Date(game_date).toLocaleDateString()}</p>
+        <p><strong>Matchup:</strong> {away_team} @ {home_team}</p>
         <p><strong>Total Pitches:</strong> {total_pitches}</p>
       </div>
 
@@ -85,14 +86,16 @@ function ModelComparison({ predictions }) {
         <h3>Pitch Predictions vs Actual</h3>
         <ResponsiveContainer width="100%" height={200 + models.length * 40}>
           <ScatterChart margin={{ top: 20, right: 100, bottom: 50, left: 150 }}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
+            <CartesianGrid strokeDasharray="5 5" stroke="#1976D2" strokeWidth={2} horizontal={false} />
             <XAxis
               type="number"
               dataKey="pitch"
               name="Pitch Number"
               domain={[1, total_pitches]}
-              tick={{ fontSize: 12 }}
+              tick={{ fontSize: 14, fontWeight: 700, fill: '#1976D2' }}
               tickCount={10}
+              stroke="#1976D2"
+              strokeWidth={3}
             />
             <YAxis
               type="number"
@@ -100,28 +103,30 @@ function ModelComparison({ predictions }) {
               name="Model"
               domain={[0, models.length + 1]}
               ticks={[models.length + 0.5, ...models.map((_, i) => models.length - i - 0.5)]}
-              tick={{ fontSize: 12 }}
+              tick={{ fontSize: 14, fontWeight: 700, fill: '#1976D2' }}
               tickFormatter={(value) => {
                 if (value === models.length + 0.5) return 'Actual'
                 const modelIndex = models.length - Math.ceil(value)
                 return models[modelIndex]?.model_name || ''
               }}
+              stroke="#1976D2"
+              strokeWidth={3}
             />
             <Tooltip
-              cursor={{ strokeDasharray: '3 3' }}
+              cursor={{ strokeDasharray: '3 3', stroke: '#FF6B35', strokeWidth: 3 }}
               content={({ active, payload }) => {
                 if (active && payload && payload.length) {
                   const data = payload[0].payload
                   return (
                     <div style={{
-                      backgroundColor: 'white',
-                      padding: '10px',
-                      border: '1px solid #cbd5e1',
-                      borderRadius: '6px',
-                      boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+                      backgroundColor: '#FFEB3B',
+                      padding: '12px 16px',
+                      border: '4px solid #FF6B35',
+                      borderRadius: '12px',
+                      boxShadow: '0 4px 0 #FFA500'
                     }}>
-                      <p style={{ margin: 0, fontWeight: 600, marginBottom: '4px' }}>Pitch #{data.pitch}</p>
-                      <p style={{ margin: 0 }}>{data.label}: <span style={{ color: PITCH_TYPE_COLORS[data.pitchType], fontWeight: 600 }}>{data.pitchType}</span></p>
+                      <p style={{ margin: 0, fontWeight: 900, marginBottom: '6px', color: '#D32F2F', fontSize: '1.1rem' }}>Pitch #{data.pitch}</p>
+                      <p style={{ margin: 0, fontWeight: 700, color: '#1976D2' }}>{data.label}: <span style={{ color: PITCH_TYPE_COLORS[data.pitchType], fontWeight: 900 }}>{data.pitchType}</span></p>
                     </div>
                   )
                 }
@@ -150,7 +155,12 @@ function ModelComparison({ predictions }) {
             />
             <Scatter data={pitchScatterData} shape="circle">
               {pitchScatterData.map((entry, index) => (
-                <Cell key={`cell-${index}`} fill={PITCH_TYPE_COLORS[entry.pitchType]} />
+                <Cell
+                  key={`cell-${index}`}
+                  fill={PITCH_TYPE_COLORS[entry.pitchType]}
+                  stroke="#333"
+                  strokeWidth={2}
+                />
               ))}
             </Scatter>
           </ScatterChart>
@@ -161,37 +171,40 @@ function ModelComparison({ predictions }) {
         <h3>Rolling Accuracy Over Game</h3>
         <ResponsiveContainer width="100%" height={450}>
           <LineChart data={chartData} margin={{ top: 20, right: 100, bottom: 50, left: 150 }}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
+            <CartesianGrid strokeDasharray="5 5" stroke="#9C27B0" strokeWidth={2} horizontal={false} />
             <XAxis
+              type="number"
               dataKey="pitch"
               domain={[1, total_pitches]}
-              tick={{ fontSize: 12 }}
+              tick={{ fontSize: 14, fontWeight: 700, fill: '#1976D2' }}
               tickCount={10}
-              label={{ value: 'Pitch Number', position: 'insideBottom', offset: -10, fontSize: 14 }}
+              stroke="#9C27B0"
+              strokeWidth={3}
             />
             <YAxis
               domain={[0, 1]}
-              tick={{ fontSize: 12 }}
+              tick={{ fontSize: 14, fontWeight: 700, fill: '#1976D2' }}
               tickFormatter={(value) => `${(value * 100).toFixed(0)}%`}
-              label={{ value: 'Accuracy', angle: -90, position: 'insideLeft', fontSize: 14 }}
+              stroke="#9C27B0"
+              strokeWidth={3}
             />
             <Tooltip
               content={({ active, payload, label }) => {
                 if (active && payload && payload.length) {
                   return (
                     <div style={{
-                      backgroundColor: 'white',
-                      padding: '10px',
-                      border: '1px solid #cbd5e1',
-                      borderRadius: '6px',
-                      boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+                      backgroundColor: '#FFEB3B',
+                      padding: '12px 16px',
+                      border: '4px solid #FF6B35',
+                      borderRadius: '12px',
+                      boxShadow: '0 4px 0 #FFA500'
                     }}>
-                      <p style={{ margin: 0, fontWeight: 600, marginBottom: '8px' }}>Pitch #{label}</p>
+                      <p style={{ margin: 0, fontWeight: 900, marginBottom: '8px', color: '#D32F2F', fontSize: '1.1rem' }}>Pitch #{label}</p>
                       {payload.map((entry, index) => {
                         const modelData = models.find(m => m.model_name === entry.dataKey)
                         const finalAccuracy = modelData ? (modelData.accuracy * 100).toFixed(1) : '0.0'
                         return (
-                          <p key={index} style={{ margin: 0, color: entry.color, marginBottom: '2px' }}>
+                          <p key={index} style={{ margin: 0, color: entry.color, marginBottom: '2px', fontWeight: 700 }}>
                             <strong>{entry.dataKey}:</strong> {(entry.value * 100).toFixed(2)}% (Final: {finalAccuracy}%)
                           </p>
                         )
@@ -205,7 +218,7 @@ function ModelComparison({ predictions }) {
             <Legend
               verticalAlign="bottom"
               height={36}
-              wrapperStyle={{ paddingTop: '20px' }}
+              wrapperStyle={{ paddingTop: '20px', fontWeight: 700, fontSize: '14px' }}
             />
             {models.map((model, index) => (
               <Line
@@ -214,7 +227,7 @@ function ModelComparison({ predictions }) {
                 dataKey={model.model_name}
                 stroke={MODEL_COLORS[index % MODEL_COLORS.length]}
                 dot={false}
-                strokeWidth={2.5}
+                strokeWidth={4}
                 name={model.model_name}
               />
             ))}
@@ -229,6 +242,9 @@ ModelComparison.propTypes = {
   predictions: PropTypes.shape({
     player_name: PropTypes.string.isRequired,
     game_date: PropTypes.string.isRequired,
+    home_team: PropTypes.string.isRequired,
+    away_team: PropTypes.string.isRequired,
+    pitcher_team: PropTypes.string.isRequired,
     total_pitches: PropTypes.number.isRequired,
     pitch_types_distribution: PropTypes.object.isRequired,
     actual_pitches: PropTypes.arrayOf(PropTypes.string).isRequired,

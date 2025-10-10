@@ -72,7 +72,7 @@ function App() {
     <div className="app">
       <header className="app-header">
         <h1>Aaronson Oracle Baseball</h1>
-        <p>Predicting baseball pitches using pattern matching algorithms</p>
+        <p>Finding a better trash can algorithm</p>
       </header>
 
       <main className="app-main">
@@ -84,14 +84,12 @@ function App() {
             disabled={loading}
           />
 
-          {gameDates.length > 0 && (
-            <GameSelector
-              dates={gameDates}
-              selectedDate={selectedDate}
-              onSelect={handleDateSelect}
-              disabled={loading}
-            />
-          )}
+          <GameSelector
+            dates={gameDates}
+            selectedDate={selectedDate}
+            onSelect={handleDateSelect}
+            disabled={loading || !selectedPlayer}
+          />
         </div>
 
         {error && (

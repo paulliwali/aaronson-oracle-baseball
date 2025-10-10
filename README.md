@@ -15,7 +15,8 @@ The application uses n-gram pattern matching and other algorithms to predict a s
 - 📊 **Interactive Visualizations**: Scatter plots showing actual vs predicted pitches, aligned with rolling accuracy charts
 - 🎯 **Multiple Prediction Models**: Compare naive baseline, n-gram (n=3,4), and frequency-based predictors
 - ⚡ **Real-time Analysis**: Analyze any MLB pitcher's game from the 2023 season
-- 🎨 **Colorful UI**: Modern, responsive interface with muted color palette
+- ⚾ **Team Matchup Info**: See home/away teams and which team the pitcher plays for
+- 🎮 **Backyard Baseball Theme**: Fun, vibrant UI inspired by the classic video game with bold colors and playful design
 
 ### Tech Stack
 
@@ -65,7 +66,7 @@ The application uses n-gram pattern matching and other algorithms to predict a s
 **Terminal 1 - Backend:**
 ```bash
 cd backend
-python run.py
+python3 run.py  # Use python3 on macOS/Linux
 ```
 API available at http://localhost:8000
 Interactive docs at http://localhost:8000/docs
@@ -86,6 +87,14 @@ Statcast tracks 13+ different pitch types. For simplicity, we consolidate them i
 - **Fast**: FF (four-seam), SI (sinker), FC (cutter), FS (splitter), FO (forkball)
 - **Breaking**: CU (curveball), SL (slider), KC (knuckle curve), SV (slurve), SC (screwball), ST (sweeper), EP (eephus)
 - **Off-Speed**: CH (changeup), KN (knuckleball)
+
+### Team Detection
+
+The app automatically determines which team the pitcher plays for by analyzing the `inning_topbot` field in Statcast data:
+- **Top of inning**: Away team batting → Home team pitching
+- **Bottom of inning**: Home team batting → Away team pitching
+
+This allows the UI to display the full matchup context (e.g., "Logan Webb (SF) - SD @ SF").
 
 ### Prediction Algorithm (N-Gram)
 
@@ -145,7 +154,11 @@ Returns list of available pitchers
   "game_date": "2023-05-15"
 }
 ```
-**Response:** Model predictions, accuracies, and pitch sequences
+**Response:** Model predictions, accuracies, pitch sequences, and game context including:
+- Home/away team matchup
+- Pitcher's team affiliation (auto-detected from game data)
+- Pitch type distribution
+- Per-model performance metrics
 
 ## Adding New Prediction Models
 

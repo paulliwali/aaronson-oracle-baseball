@@ -18,7 +18,9 @@ venv/
 
 # Training data and model weights
 data/training/
-models/
+models/*
+!models/*.pt
+!models/*.joblib
 training/configs/
 
 # Node

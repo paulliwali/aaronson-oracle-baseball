@@ -1,0 +1,132 @@
+{
+  "Naive (Always Fast)": {
+    "accuracy": 0.5643,
+    "per_class": {
+      "fast": 1.0,
+      "breaking": 0.0,
+      "off-speed": 0.0
+    },
+    "confusion": {
+      "fast": {
+        "fast": 14061,
+        "breaking": 0,
+        "off-speed": 0
+      },
+      "breaking": {
+        "fast": 8109,
+        "breaking": 0,
+        "off-speed": 0
+      },
+      "off-speed": {
+        "fast": 2747,
+        "breaking": 0,
+        "off-speed": 0
+      }
+    },
+    "n_pitches": 24917
+  },
+  "N-Gram (n=3)": {
+    "accuracy": 0.5335,
+    "per_class": {
+      "fast": 0.7795,
+      "breaking": 0.2496,
+      "off-speed": 0.1121
+    },
+    "confusion": {
+      "fast": {
+        "fast": 10961,
+        "breaking": 2535,
+        "off-speed": 565
+      },
+      "breaking": {
+        "fast": 5703,
+        "breaking": 2024,
+        "off-speed": 382
+      },
+      "off-speed": {
+        "fast": 1858,
+        "breaking": 581,
+        "off-speed": 308
+      }
+    },
+    "n_pitches": 24917
+  },
+  "N-Gram (n=4)": {
+    "accuracy": 0.5376,
+    "per_class": {
+      "fast": 0.8223,
+      "breaking": 0.1977,
+      "off-speed": 0.0837
+    },
+    "confusion": {
+      "fast": {
+        "fast": 11563,
+        "breaking": 2048,
+        "off-speed": 450
+      },
+      "breaking": {
+        "fast": 6222,
+        "breaking": 1603,
+        "off-speed": 284
+      },
+      "off-speed": {
+        "fast": 2095,
+        "breaking": 422,
+        "off-speed": 230
+      }
+    },
+    "n_pitches": 24917
+  },
+  "Frequency-Based (Oracle)": {
+    "accuracy": 0.4834,
+    "per_class": {
+      "fast": 0.5979,
+      "breaking": 0.3775,
+      "off-speed": 0.2104
+    },
+    "confusion": {
+      "fast": {
+        "fast": 8407,
+        "breaking": 4332,
+        "off-speed": 1322
+      },
+      "breaking": {
+        "fast": 4246,
+        "breaking": 3061,
+        "off-speed": 802
+      },
+      "off-speed": {
+        "fast": 1292,
+        "breaking": 877,
+        "off-speed": 578
+      }
+    },
+    "n_pitches": 24917
+  },
+  "Markov Context": {
+    "accuracy": 0.5552,
+    "per_class": {
+      "fast": 0.9493,
+      "breaking": 0.054,
+      "off-speed": 0.0175
+    },
+    "confusion": {
+      "fast": {
+        "fast": 13348,
+        "breaking": 589,
+        "off-speed": 124
+      },
+      "breaking": {
+        "fast": 7613,
+        "breaking": 438,
+        "off-speed": 58
+      },
+      "off-speed": {
+        "fast": 2629,
+        "breaking": 70,
+        "off-speed": 48
+      }
+    },
+    "n_pitches": 24917
+  }
+}

@@ -37,3 +37,19 @@ b6086c2	0.602801	discard	larger context embeddings
 b6feeb6	0.592969	discard	validate every 3 epochs
 59e24ea	0.564835	discard	seed=42 (shows high variance)
 fc7f91b	0.616085	keep	re-run best config (lucky init, new best!)
+361eaba	0.582293	discard	SWA weight averaging
+16bc381	0.583497	discard	EMA weights decay=0.99
+a159489	0.575069	discard	label smoothing 0.03
+0452c13	0.613437	discard	3-model ensemble 100s each
+83f0d85	0.614159	discard	7 layers
+a5b725b	0.594895	discard	dropout 0.18
+474d884	0.579444	discard	count prior blending
+52d94a2	0.592286	discard	grad accum effective batch 128
+105fd65	0.567484	discard	Random Forest 500 trees
+18ef889	0.589638	discard	two-phase class weights
+893c627	0.591925	discard	GPT-2 style init
+9296683	0.581731	discard	snapshot ensemble
+c0ab81b	0.599149	discard	LR 2e-4
+a78eef0	0.602480	discard	FiLM conditioning
+5166fcf	0.601236	discard	constant LR (no scheduler)
+e01d9a2	0.582173	discard	online frequency adaptation

@@ -18,6 +18,11 @@ function App() {
   const [predictions, setPredictions] = useState(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
+  const [theme, setTheme] = useState(() => localStorage.getItem('theme') || 'backyard')
+
+  useEffect(() => {
+    localStorage.setItem('theme', theme)
+  }, [theme])
 
   // Fetch available players on mount
   useEffect(() => {
@@ -72,10 +77,19 @@ function App() {
   }
 
   return (
-    <div className="app">
+    <div className="app" data-theme={theme}>
       <header className="app-header">
-        <h1>Aaronson Oracle Baseball</h1>
-        <p>Finding a better trash can algorithm</p>
+        <div className="header-content">
+          <h1>Aaronson Oracle Baseball</h1>
+          <p>Finding a better trash can algorithm</p>
+        </div>
+        <button
+          className="theme-toggle"
+          onClick={() => setTheme(t => t === 'backyard' ? 'modern' : 'backyard')}
+          title={`Switch to ${theme === 'backyard' ? 'modern' : 'backyard'} theme`}
+        >
+          {theme === 'backyard' ? 'Clean Mode' : 'Fun Mode'}
+        </button>
       </header>
 
       <main className="app-main">
@@ -108,7 +122,7 @@ function App() {
         )}
 
         {predictions && !loading && (
-          <ModelComparison predictions={predictions} />
+          <ModelComparison predictions={predictions} theme={theme} />
         )}
       </main>
     </div>

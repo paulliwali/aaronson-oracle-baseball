@@ -1,1 +1,39 @@
 commit	test_accuracy	status	description
+d7533f2	0.583858	keep	baseline (PitchGPT transformer 4L/4H/64d)
+8541f34	0.464021	discard	gradient boosted tree with class weighting (over-predicted off-speed)
+1533af5	0.464021	discard	GBT without class weighting (same accuracy, still bad)
+667fac9	0.589156	keep	PitchGPT transformer 4L/4H/64d reimplementation (beats baseline)
+15c043e	0.507124	discard	transformer with inverse-frequency class weighting (overcorrected)
+d4a9665	0.603323	keep	larger transformer 6L/4H/128d (new best)
+d5f0b99	0.590159	discard	8L/8H/256d too large
+e1f9569	0.574949	discard	higher LR + label smoothing
+ec1e3a5	0.601798	discard	score diff context
+81fc1cc	0.580407	discard	lower dropout + batch 64
+1996c56	0.588393	discard	warmup + cosine decay
+dd59685	0.576795	discard	batch 16 too noisy
+d340ab8	0.561865	discard	3-layer LSTM
+b0ca844	0.575149	discard	focal loss gamma=2
+6c65caf	0.602280	discard	6L/8H/128d more heads
+c5df82e	0.600634	discard	seq_len=128 (loses context)
+e3af8b0	0.607617	keep	lower weight decay 0.001 (new best)
+c1eb826	0.596019	discard	wd 0.0001
+a15ade5	0.597745	discard	5L
+c9d792c	0.571497	discard	LR 5e-4
+f9e83ca	0.574909	discard	count priors ensemble
+6bac21f	0.598587	discard	no pos embed
+b818e95	0.608621	keep	FFN 6x d_model (new best)
+5f87625	0.596862	discard	FFN 8x too wide
+3d9a6f0	0.583136	discard	MLP head (extra params hurt)
+eb566ee	0.613396	keep	dropout 0.15 (current best)
+ad1dba8	0.591042	discard	embedding dropout
+5abdc19	0.601035	discard	GELU activation
+481a62b	0.572541	discard	4L/160d wider shallower
+f86d881	0.582213	discard	pitcher embeddings (overfit)
+f6cca41	0.606012	discard	dropout 0.12
+bbdf218	0.569651	discard	FFN 5x
+9b915b7	0.589477	discard	post-norm
+bef0ab7	0.580086	discard	LR 4e-4
+b6086c2	0.602801	discard	larger context embeddings
+b6feeb6	0.592969	discard	validate every 3 epochs
+59e24ea	0.564835	discard	seed=42 (shows high variance)
+fc7f91b	0.616085	keep	re-run best config (lucky init, new best!)

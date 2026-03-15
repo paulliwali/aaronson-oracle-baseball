@@ -1,0 +1,30 @@
+{
+    "pitchers": [
+        {"name": "Gerrit Cole", "first": "Gerrit", "last": "Cole"},
+        {"name": "Spencer Strider", "first": "Spencer", "last": "Strider"},
+        {"name": "Logan Webb", "first": "Logan", "last": "Webb"},
+        {"name": "Zack Wheeler", "first": "Zack", "last": "Wheeler"},
+        {"name": "Corbin Burnes", "first": "Corbin", "last": "Burnes"},
+        {"name": "Framber Valdez", "first": "Framber", "last": "Valdez"},
+        {"name": "Blake Snell", "first": "Blake", "last": "Snell"},
+        {"name": "Kevin Gausman", "first": "Kevin", "last": "Gausman"},
+        {"name": "Shohei Ohtani", "first": "Shohei", "last": "Ohtani"},
+        {"name": "Max Scherzer", "first": "Max", "last": "Scherzer"},
+        {"name": "Justin Verlander", "first": "Justin", "last": "Verlander"},
+        {"name": "Aaron Nola", "first": "Aaron", "last": "Nola"},
+        {"name": "Sonny Gray", "first": "Sonny", "last": "Gray"},
+        {"name": "Luis Castillo", "first": "Luis", "last": "Castillo"},
+        {"name": "Shane McClanahan", "first": "Shane", "last": "McClanahan"},
+        {"name": "Pablo Lopez", "first": "Pablo", "last": "Lopez"},
+        {"name": "Yu Darvish", "first": "Yu", "last": "Darvish"},
+        {"name": "Zac Gallen", "first": "Zac", "last": "Gallen"},
+        {"name": "Tyler Glasnow", "first": "Tyler", "last": "Glasnow"},
+        {"name": "Bryce Miller", "first": "Bryce", "last": "Miller"},
+        {"name": "Tanner Houck", "first": "Tanner", "last": "Houck"},
+        {"name": "Tarik Skubal", "first": "Tarik", "last": "Skubal"},
+        {"name": "Chris Sale", "first": "Chris", "last": "Sale"},
+        {"name": "Seth Lugo", "first": "Seth", "last": "Lugo"},
+        {"name": "Cole Ragans", "first": "Cole", "last": "Ragans"}
+    ],
+    "seasons": [2022, 2023, 2024]
+}

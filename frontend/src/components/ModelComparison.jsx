@@ -1,3 +1,4 @@
+import { useRef } from 'react'
 import PropTypes from 'prop-types'
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, ScatterChart, Scatter, Cell, ReferenceLine, Label } from 'recharts'
 
@@ -9,8 +10,47 @@ const PITCH_TYPE_COLORS = {
   'off-speed': '#4CAF50'  // bright green
 }
 
+const MODEL_DESCRIPTIONS = {
+  'Transformer': {
+    title: 'PitchGPT Transformer',
+    description: 'A small GPT-style causal transformer that predicts the next pitch type from the sequence of previous pitches in a game. Like a language model, it treats each pitch as a "token" and learns sequential patterns — what pitchers tend to throw after specific sequences. It also conditions on game context: the count (balls/strikes), outs, and inning.',
+    details: '6-layer transformer, 4 attention heads, ~800K parameters. Trained on Statcast data with a 5-minute time budget.',
+  },
+  'Naive (Always Fast)': {
+    title: 'Naive (Always Fast)',
+    description: 'Always predicts "fast". A baseline that exploits the class imbalance — since ~56% of pitches are fastballs, this simple strategy is surprisingly competitive.',
+    details: 'No parameters. Zero training required.',
+  },
+  'N-Gram (n=3)': {
+    title: 'N-Gram (n=3)',
+    description: 'An adaptation of Aaronson\'s Oracle for pitch prediction. Tracks the last 3 pitch types as a "context" and predicts whatever pitch type most frequently followed that context within the current game. Builds its lookup table on-the-fly.',
+    details: 'Online learning — adapts to each pitcher\'s tendencies during the game.',
+  },
+  'N-Gram (n=4)': {
+    title: 'N-Gram (n=4)',
+    description: 'Same as N-Gram (n=3) but uses 4-pitch context windows. Longer context captures more specific patterns but needs more data to build reliable statistics.',
+    details: 'Online learning — adapts to each pitcher\'s tendencies during the game.',
+  },
+  'Frequency-Based (Oracle)': {
+    title: 'Frequency-Based (Oracle)',
+    description: 'Samples from the observed pitch distribution within the current game rather than picking the most likely pitch. More balanced across classes but lower overall accuracy since it doesn\'t always pick the most probable option.',
+    details: 'Online learning — tracks running pitch frequencies.',
+  },
+  'Markov Context': {
+    title: 'Markov Context',
+    description: 'Extends the n-gram approach by conditioning on game state (count and outs) in addition to recent pitch history. Tracks pitch patterns within specific game situations — e.g., what a pitcher tends to throw in a 3-2 count with 2 outs.',
+    details: 'Online learning with situational context awareness.',
+  },
+}
+
 function ModelComparison({ predictions }) {
   const { player_name, game_date, home_team, away_team, pitcher_team, total_pitches, pitch_types_distribution, actual_pitches, models } = predictions
+  const descriptionsRef = useRef(null)
+
+  const scrollToModel = (modelName) => {
+    const el = document.getElementById(`model-desc-${modelName.replace(/[^a-zA-Z0-9]/g, '-')}`)
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' })
+  }
 
   // Transform data for the rolling accuracy chart
   const chartData = Array.from({ length: total_pitches }, (_, i) => {
@@ -219,6 +259,23 @@ function ModelComparison({ predictions }) {
               verticalAlign="bottom"
               height={36}
               wrapperStyle={{ paddingTop: '20px', fontWeight: 700, fontSize: '14px' }}
+              content={() => (
+                <div className="rolling-legend">
+                  {models.map((model, index) => (
+                    <span
+                      key={model.model_name}
+                      className="rolling-legend-item"
+                      onClick={() => scrollToModel(model.model_name)}
+                    >
+                      <span
+                        className="rolling-legend-line"
+                        style={{ backgroundColor: MODEL_COLORS[index % MODEL_COLORS.length] }}
+                      />
+                      {model.model_name}
+                    </span>
+                  ))}
+                </div>
+              )}
             />
             {models.map((model, index) => (
               <Line
@@ -233,6 +290,32 @@ function ModelComparison({ predictions }) {
             ))}
           </LineChart>
         </ResponsiveContainer>
+      </div>
+
+      <div className="model-descriptions" ref={descriptionsRef}>
+        <h3>About the Models</h3>
+        <p className="model-descriptions-subtitle">Click a model name in the chart legend to jump here</p>
+        <div className="model-cards-grid">
+          {models.map((model, index) => {
+            const info = MODEL_DESCRIPTIONS[model.model_name]
+            if (!info) return null
+            return (
+              <div
+                key={model.model_name}
+                id={`model-desc-${model.model_name.replace(/[^a-zA-Z0-9]/g, '-')}`}
+                className="model-card"
+                style={{ borderLeftColor: MODEL_COLORS[index % MODEL_COLORS.length] }}
+              >
+                <div className="model-card-header">
+                  <h4 style={{ color: MODEL_COLORS[index % MODEL_COLORS.length] }}>{info.title}</h4>
+                  <span className="model-card-accuracy">{(model.accuracy * 100).toFixed(1)}%</span>
+                </div>
+                <p className="model-card-description">{info.description}</p>
+                <p className="model-card-details">{info.details}</p>
+              </div>
+            )
+          })}
+        </div>
       </div>
     </div>
   )

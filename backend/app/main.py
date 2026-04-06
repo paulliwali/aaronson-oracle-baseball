@@ -10,7 +10,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
 
-from app.routers import players, predictions
+from app.routers import players, predictions, live
 
 
 @asynccontextmanager
@@ -60,6 +60,7 @@ app.add_middleware(
 # Include routers
 app.include_router(players.router, prefix="/api", tags=["players"])
 app.include_router(predictions.router, prefix="/api", tags=["predictions"])
+app.include_router(live.router, prefix="/api", tags=["live"])
 
 # Check if frontend build exists
 frontend_dist = Path(__file__).parent.parent.parent / "frontend" / "dist"

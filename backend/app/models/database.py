@@ -62,9 +62,9 @@ class StatcastPitch(Base):
     # Metadata
     created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
 
-    # Composite unique constraint: one pitch per game+pitcher+pitch_number
+    # Composite unique constraint: one pitch per game+pitcher+at_bat+pitch_number
     __table_args__ = (
-        UniqueConstraint('game_pk', 'pitcher', 'pitch_number', name='uix_game_pitcher_pitch'),
+        UniqueConstraint('game_pk', 'pitcher', 'at_bat_number', 'pitch_number', name='uix_game_pitcher_ab_pitch'),
         Index('ix_pitcher_date', 'pitcher', 'game_date'),
     )
 
@@ -90,3 +90,24 @@ class PitcherGameCache(Base):
 
     def __repr__(self):
         return f"<PitcherGameCache(pitcher_id={self.pitcher_id}, game_date={self.game_date}, pitches={self.total_pitches})>"
+
+
+class PitcherSeason(Base):
+    """Tracks which pitcher+season combos are fully synced to Postgres."""
+
+    __tablename__ = "pitcher_seasons"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    pitcher_id = Column(Integer, nullable=False, index=True)
+    pitcher_name = Column(String(100), nullable=False)
+    season = Column(Integer, nullable=False)
+    synced_at = Column(DateTime, default=datetime.utcnow, nullable=False)
+    total_games = Column(Integer, nullable=False)
+    total_pitches = Column(Integer, nullable=False)
+
+    __table_args__ = (
+        UniqueConstraint('pitcher_id', 'season', name='uix_pitcher_season'),
+    )
+
+    def __repr__(self):
+        return f"<PitcherSeason(pitcher={self.pitcher_name}, season={self.season}, games={self.total_games})>"

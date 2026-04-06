@@ -643,6 +643,736 @@ body {
   color: var(--tooltip-text-color);
 }
 
+/* ========================================
+   Mode Toggle
+   ======================================== */
+
+.mode-toggle {
+  display: flex;
+  gap: 0;
+  margin-bottom: 1.5rem;
+  justify-content: center;
+}
+
+.mode-button {
+  padding: 0.6rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 700;
+  font-family: inherit;
+  cursor: pointer;
+  border: var(--select-border);
+  background: var(--toggle-bg);
+  color: var(--toggle-color);
+  transition: all 0.2s;
+}
+
+.mode-button:first-child {
+  border-radius: var(--toggle-radius) 0 0 var(--toggle-radius);
+}
+
+.mode-button:not(:last-child) {
+  border-right: none;
+}
+
+.mode-button:last-child {
+  border-radius: 0 var(--toggle-radius) var(--toggle-radius) 0;
+}
+
+.mode-button.active {
+  background: var(--select-bg);
+  color: var(--select-color);
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.15);
+}
+
+.mode-button:hover:not(.active) {
+  background: var(--toggle-hover-bg);
+}
+
+/* ========================================
+   Playback Game
+   ======================================== */
+
+.playback-game {
+  background: var(--panel-bg);
+  padding: 2rem;
+  border-radius: var(--panel-radius);
+  box-shadow: var(--panel-shadow);
+  border: var(--panel-border);
+}
+
+.playback-start {
+  text-align: center;
+  padding: 2rem 1rem;
+}
+
+.playback-start h2 {
+  color: var(--h2-color);
+  text-shadow: var(--h2-shadow);
+  margin-bottom: 1rem;
+}
+
+.playback-start p {
+  max-width: 500px;
+  margin: 0 auto 2rem;
+  line-height: 1.6;
+}
+
+.start-button,
+.next-pitch-button {
+  padding: 0.75rem 2rem;
+  font-size: 1.1rem;
+  font-weight: 700;
+  font-family: inherit;
+  background: var(--select-bg);
+  color: var(--select-color);
+  border: var(--select-border);
+  border-radius: var(--select-radius);
+  box-shadow: var(--select-shadow);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.start-button:hover,
+.next-pitch-button:hover {
+  background: var(--select-hover-bg);
+  box-shadow: var(--select-hover-shadow);
+}
+
+.next-pitch-container {
+  text-align: center;
+  margin-top: 1.5rem;
+}
+
+/* Context display */
+
+.playback-context {
+  margin-bottom: 1.5rem;
+}
+
+.context-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.pitch-counter {
+  font-size: 1.2rem;
+  font-weight: 900;
+  color: var(--h2-color);
+}
+
+.context-teams {
+  font-weight: 600;
+  color: var(--h3-color);
+}
+
+.context-batter {
+  font-size: 1rem;
+  color: var(--h3-color);
+}
+
+.context-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.context-item {
+  text-align: center;
+  padding: 0.75rem;
+  background: var(--game-info-bg);
+  border-radius: 10px;
+  border: var(--game-info-border);
+  box-shadow: var(--game-info-shadow);
+  color: var(--game-info-color);
+}
+
+.context-label {
+  display: block;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  opacity: 0.8;
+  margin-bottom: 0.25rem;
+}
+
+.context-value {
+  display: block;
+  font-size: 1.4rem;
+  font-weight: 900;
+  text-shadow: var(--game-info-text-shadow);
+}
+
+/* Pitch history ribbon */
+
+.pitch-history {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem 0;
+}
+
+.history-label {
+  font-weight: 600;
+  font-size: 0.85rem;
+  color: var(--label-color);
+  white-space: nowrap;
+}
+
+.history-groups {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.history-ab-group {
+  display: inline-flex;
+  gap: 3px;
+  padding: 3px 5px;
+  background: rgba(0, 0, 0, 0.08);
+  border-radius: 8px;
+}
+
+.history-pitch-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.history-pitch {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  color: white;
+  font-weight: 900;
+  font-size: 0.75rem;
+  border: 2px solid rgba(0, 0, 0, 0.2);
+}
+
+.history-guesses {
+  display: flex;
+  gap: 1px;
+}
+
+.guess-indicator {
+  font-size: 0.5rem;
+  font-weight: 700;
+  width: 13px;
+  height: 13px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 3px;
+  color: white;
+  line-height: 1;
+}
+
+.guess-indicator.correct {
+  background: #43a047;
+}
+
+.guess-indicator.wrong {
+  background: #e53935;
+  opacity: 0.7;
+}
+
+/* Guess panel */
+
+.guess-panel {
+  margin-top: 1rem;
+}
+
+.guess-prompt h3 {
+  text-align: center;
+  color: var(--h3-color);
+  text-shadow: var(--h3-shadow);
+  margin-bottom: 1rem;
+}
+
+.guess-buttons {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+}
+
+.guess-button {
+  padding: 0.7rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 900;
+  font-family: inherit;
+  background: var(--btn-color);
+  color: white;
+  border: 3px solid rgba(0, 0, 0, 0.2);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.15s;
+  box-shadow: 0 3px 0 rgba(0, 0, 0, 0.2);
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+  min-width: 100px;
+}
+
+.guess-button:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 0 rgba(0, 0, 0, 0.2);
+}
+
+.guess-button:active:not(:disabled) {
+  transform: translateY(2px);
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.2);
+}
+
+.guess-button:disabled {
+  cursor: not-allowed;
+}
+
+.key-hint {
+  display: inline-block;
+  background: rgba(255, 255, 255, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  border-radius: 4px;
+  padding: 0 5px;
+  font-size: 0.75rem;
+  font-family: monospace;
+  font-weight: 700;
+  margin-right: 4px;
+  vertical-align: middle;
+  line-height: 1.4;
+}
+
+.keyboard-hint {
+  text-align: center;
+  margin-top: 0.75rem;
+  font-size: 0.75rem;
+  opacity: 0.5;
+  font-weight: 600;
+}
+
+.keyboard-hint kbd {
+  display: inline-block;
+  background: rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  border-radius: 4px;
+  padding: 1px 6px;
+  font-family: monospace;
+  font-size: 0.7rem;
+  margin-right: 2px;
+}
+
+/* Result display */
+
+.guess-result {
+  margin-top: 1.5rem;
+  padding: 1.25rem;
+  border-radius: 12px;
+  text-align: center;
+}
+
+.guess-result.correct {
+  background: var(--card-accuracy-bg);
+  border: var(--card-accuracy-border);
+}
+
+.guess-result.incorrect {
+  background: var(--error-bg);
+  border: var(--error-border);
+}
+
+.result-header {
+  font-size: 1.5rem;
+  font-weight: 900;
+  margin-bottom: 0.75rem;
+}
+
+.guess-result.correct .result-header {
+  color: var(--card-accuracy-color);
+}
+
+.guess-result.incorrect .result-header {
+  color: var(--error-color);
+}
+
+.result-details {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  margin-bottom: 1rem;
+}
+
+.result-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.result-label {
+  font-weight: 600;
+}
+
+.result-pitch {
+  font-weight: 900;
+  text-transform: capitalize;
+  font-size: 1.1rem;
+}
+
+/* Model guesses in result */
+
+.model-guesses {
+  margin-top: 1rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.model-guesses-title {
+  font-weight: 600;
+  font-size: 0.85rem;
+  margin-bottom: 0.5rem;
+  opacity: 0.7;
+}
+
+.model-guess-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.25rem 1rem;
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+.model-guess-name {
+  font-size: 0.85rem;
+}
+
+.model-guess-pred {
+  font-size: 0.85rem;
+  text-transform: capitalize;
+}
+
+/* Scoreboard — compact inline */
+
+.scoreboard {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  padding: 0.6rem 1rem;
+  background: var(--game-info-bg);
+  border-radius: 10px;
+  border: var(--game-info-border);
+  color: var(--game-info-color);
+}
+
+.score-item {
+  text-align: center;
+  min-width: 80px;
+}
+
+.score-label {
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  opacity: 0.8;
+}
+
+.score-value {
+  font-size: 1.1rem;
+  font-weight: 900;
+  text-shadow: var(--game-info-text-shadow);
+}
+
+.score-pct {
+  font-size: 0.8rem;
+  font-weight: 400;
+  opacity: 0.8;
+}
+
+.score-vs {
+  font-weight: 900;
+  font-size: 1rem;
+  opacity: 0.5;
+}
+
+/* Inline result row */
+
+/* Game over */
+
+.game-over-panel {
+  text-align: center;
+  padding: 1rem;
+}
+
+.game-over-panel h2 {
+  color: var(--h2-color);
+  text-shadow: var(--h2-shadow);
+  margin-bottom: 1.5rem;
+  font-size: 2rem;
+}
+
+.final-scores {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2rem;
+  margin-bottom: 2rem;
+}
+
+.final-score-card {
+  padding: 1.5rem 2rem;
+  border-radius: 15px;
+  background: var(--game-info-bg);
+  border: var(--game-info-border);
+  color: var(--game-info-color);
+  min-width: 150px;
+}
+
+.final-score-card.winner {
+  box-shadow: 0 0 0 4px gold, var(--game-info-shadow);
+}
+
+.final-score-label {
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  font-weight: 600;
+  opacity: 0.8;
+  margin-bottom: 0.5rem;
+}
+
+.final-score-value {
+  font-size: 2rem;
+  font-weight: 900;
+  text-shadow: var(--game-info-text-shadow);
+}
+
+.final-score-pct {
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+.final-vs {
+  font-size: 1.5rem;
+  font-weight: 900;
+  color: var(--h3-color);
+}
+
+.all-model-scores {
+  margin: 1.5rem auto;
+  max-width: 400px;
+  text-align: left;
+}
+
+.all-model-scores h3 {
+  color: var(--h3-color);
+  text-shadow: var(--h3-shadow);
+  margin-bottom: 0.75rem;
+  text-align: center;
+}
+
+.model-final-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.5rem 0.75rem;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  font-weight: 600;
+}
+
+/* ========================================
+   Live Game Components
+   ======================================== */
+
+.live-games-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1rem;
+}
+
+.live-game-card {
+  background: var(--card-bg);
+  border: var(--panel-border);
+  border-radius: var(--panel-radius);
+  padding: 0;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: left;
+  font-family: inherit;
+  overflow: hidden;
+}
+
+.live-game-card:hover:not(:disabled) {
+  box-shadow: var(--panel-shadow);
+  transform: translateY(-2px);
+}
+
+.live-game-card.selected {
+  box-shadow: 0 0 0 3px var(--select-focus-border);
+}
+
+.live-game-card:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.game-status {
+  padding: 0.4rem 0.75rem;
+  color: white;
+  font-weight: 700;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+}
+
+.game-matchup {
+  padding: 0.75rem;
+}
+
+.team-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.25rem 0;
+}
+
+.team-name {
+  font-weight: 700;
+  font-size: 1rem;
+}
+
+.team-score {
+  font-weight: 900;
+  font-size: 1.2rem;
+}
+
+.game-pitchers {
+  padding: 0.5rem 0.75rem;
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+  font-size: 0.8rem;
+}
+
+.pitcher-info {
+  padding: 0.15rem 0;
+}
+
+.pitcher-label {
+  font-weight: 600;
+  opacity: 0.7;
+}
+
+.no-games {
+  text-align: center;
+  padding: 2rem;
+  color: var(--label-color);
+  font-weight: 600;
+}
+
+/* Live controls */
+
+.live-controls {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.back-button {
+  padding: 0.5rem 1rem;
+  font-size: 0.9rem;
+  font-weight: 700;
+  font-family: inherit;
+  background: var(--toggle-bg);
+  color: var(--toggle-color);
+  border: var(--toggle-border);
+  border-radius: var(--toggle-radius);
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.back-button:hover {
+  background: var(--toggle-hover-bg);
+}
+
+.live-pitcher-select {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.live-pitcher-select label {
+  font-weight: 600;
+  color: var(--label-color);
+}
+
+.live-pitcher-select select {
+  padding: 0.5rem 0.75rem;
+  font-size: 0.9rem;
+  font-family: inherit;
+  border: var(--select-border);
+  border-radius: var(--select-radius);
+  background: var(--select-bg);
+  color: var(--select-color);
+  cursor: pointer;
+}
+
+/* Live indicator */
+
+.live-indicator {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+  padding: 0.75rem 1rem;
+  background: var(--game-info-bg);
+  border-radius: 10px;
+  border: var(--game-info-border);
+  color: var(--game-info-color);
+}
+
+.live-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #f44336;
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+.live-text {
+  font-weight: 900;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.last-updated {
+  font-size: 0.8rem;
+  opacity: 0.7;
+  margin-left: auto;
+}
+
+.refresh-button {
+  padding: 0.35rem 0.75rem;
+  font-size: 0.8rem;
+  font-weight: 700;
+  font-family: inherit;
+  background: rgba(255, 255, 255, 0.2);
+  color: inherit;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.refresh-button:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
 @media (max-width: 768px) {
   .controls {
     flex-direction: column;
@@ -661,5 +1391,29 @@ body {
 
   .app-header {
     flex-direction: column;
+  }
+
+  .context-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .guess-buttons {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .guess-button {
+    width: 100%;
+    max-width: 300px;
+  }
+
+  .final-scores {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .result-details {
+    flex-direction: column;
+    gap: 0.5rem;
   }
 }

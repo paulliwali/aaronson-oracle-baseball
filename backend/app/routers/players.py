@@ -1,23 +1,42 @@
 """Player-related API endpoints"""
 
+import json
+from pathlib import Path
+
 from fastapi import APIRouter, HTTPException, Request
 
+from app.database import get_db
 from app.models.schemas import PlayerRequest, PlayerStatsResponse
-from app.services.baseball import get_player_id, fetch_and_cache_player_stats
+from app.services.baseball import get_player_id, fetch_and_cache_player_stats, get_pitcher_games_from_db
 
 
 router = APIRouter()
 
-START_DT = "2023-04-01"
-END_DT = "2023-09-01"
+DEFAULT_SEASON = 2025
+START_DT = "2025-03-01"
+END_DT = "2025-11-01"
+
+PITCHERS_JSON = Path(__file__).parent.parent.parent.parent / "training" / "pitchers.json"
 
 
 @router.post("/players/stats", response_model=PlayerStatsResponse)
 async def get_player_stats(player_request: PlayerRequest, request: Request):
-    """Get all game dates for a player within the date range"""
+    """Get all game dates for a player — checks Postgres first, falls back to API"""
     try:
         player_id = get_player_id(player_request.player_name)
 
+        # Try Postgres first (fast, no API call) — filter to current analysis season
+        with get_db() as db:
+            game_dates = get_pitcher_games_from_db(db, player_id, season=DEFAULT_SEASON)
+
+        if game_dates:
+            return PlayerStatsResponse(
+                player_name=player_request.player_name,
+                player_id=player_id,
+                game_dates=game_dates,
+            )
+
+        # Fall back to Statcast API
         player_df = fetch_and_cache_player_stats(
             redis_client=request.app.state.redis,
             player_id=player_id,
@@ -41,15 +60,21 @@ async def get_player_stats(player_request: PlayerRequest, request: Request):
 
 @router.get("/players/list")
 async def get_players_list():
-    """Get hardcoded list of popular pitchers"""
-    return {
-        "players": [
-            "Logan Webb",
-            "Corbin Burnes",
-            "Zac Gallen",
-            "Gerrit Cole",
-            "Blake Snell",
-            "Zack Wheeler",
-            "Kodai Senga",
-        ]
-    }
+    """Get list of pitchers from pitchers.json"""
+    try:
+        with open(PITCHERS_JSON) as f:
+            data = json.load(f)
+        return {"players": [p["name"] for p in data["pitchers"]]}
+    except FileNotFoundError:
+        # Fallback to hardcoded list if file not found
+        return {
+            "players": [
+                "Logan Webb",
+                "Corbin Burnes",
+                "Zac Gallen",
+                "Gerrit Cole",
+                "Blake Snell",
+                "Zack Wheeler",
+                "Kodai Senga",
+            ]
+        }

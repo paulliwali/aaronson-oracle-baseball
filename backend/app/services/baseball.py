@@ -49,12 +49,36 @@ def map_pitch_type(game_stats_df: pd.DataFrame) -> pd.DataFrame:
     return game_stats_df
 
 
+def get_pitcher_games_from_db(db: Session, player_id: int, season: Optional[int] = None) -> Optional[list]:
+    """Get cached game dates for a pitcher from Postgres.
+
+    If season is provided, filters to that year only.
+    Returns sorted list of game_date strings, or None if no data found.
+    """
+    query = db.query(PitcherGameCache.game_date).filter(
+        PitcherGameCache.pitcher_id == player_id,
+    )
+
+    if season:
+        query = query.filter(
+            PitcherGameCache.game_date >= f"{season}-01-01",
+            PitcherGameCache.game_date < f"{season + 1}-01-01",
+        )
+
+    records = query.order_by(PitcherGameCache.game_date).all()
+
+    if not records:
+        return None
+
+    return [r.game_date for r in records]
+
+
 def _load_from_postgres(db: Session, player_id: int, game_date: str) -> Optional[pd.DataFrame]:
     """Load game data from Postgres database"""
     pitches = db.query(StatcastPitch).filter(
         StatcastPitch.pitcher == player_id,
         StatcastPitch.game_date == game_date
-    ).order_by(StatcastPitch.pitch_number).all()
+    ).order_by(StatcastPitch.at_bat_number, StatcastPitch.pitch_number).all()
 
     if not pitches:
         return None
@@ -94,9 +118,30 @@ def _load_from_postgres(db: Session, player_id: int, game_date: str) -> Optional
     return pd.DataFrame(data)
 
 
+def _safe_float(val):
+    if pd.isna(val):
+        return None
+    try:
+        return float(val)
+    except (ValueError, TypeError):
+        return None
+
+
+def _safe_int(val, default=0):
+    if pd.isna(val):
+        return default
+    try:
+        return int(float(val))
+    except (ValueError, TypeError):
+        return default
+
+
 def _save_to_postgres(db: Session, game_stats_df: pd.DataFrame, player_id: int, game_date: str):
     """Save game data to Postgres database"""
     try:
+        if game_stats_df.empty:
+            return
+
         # Check if already cached
         existing = db.query(PitcherGameCache).filter(
             PitcherGameCache.pitcher_id == player_id,
@@ -107,37 +152,37 @@ def _save_to_postgres(db: Session, game_stats_df: pd.DataFrame, player_id: int, 
             return  # Already cached
 
         # Get game_pk from the data
-        game_pk = int(game_stats_df['game_pk'].iloc[0]) if 'game_pk' in game_stats_df.columns else 0
+        game_pk = _safe_int(game_stats_df['game_pk'].iloc[0]) if 'game_pk' in game_stats_df.columns else 0
 
         # Insert all pitches
         for _, row in game_stats_df.iterrows():
             pitch = StatcastPitch(
-                game_pk=int(row.get('game_pk', game_pk)),
+                game_pk=_safe_int(row.get('game_pk', game_pk)),
                 game_date=game_date,
                 pitcher=player_id,
-                player_name=row.get('player_name', ''),
-                batter=int(row.get('batter', 0)),
-                home_team=row.get('home_team', ''),
-                away_team=row.get('away_team', ''),
-                inning_topbot=row.get('inning_topbot', ''),
-                inning=int(row.get('inning', 0)),
-                pitch_type=row.get('pitch_type'),
-                pitch_type_simplified=row.get('pitch_type_simplified'),
-                pitch_name=row.get('pitch_name'),
-                release_speed=float(row['release_speed']) if pd.notna(row.get('release_speed')) else None,
-                release_spin_rate=int(row['release_spin_rate']) if pd.notna(row.get('release_spin_rate')) else None,
-                plate_x=float(row['plate_x']) if pd.notna(row.get('plate_x')) else None,
-                plate_z=float(row['plate_z']) if pd.notna(row.get('plate_z')) else None,
-                balls=int(row.get('balls', 0)),
-                strikes=int(row.get('strikes', 0)),
-                outs_when_up=int(row.get('outs_when_up', 0)),
-                pitch_number=int(row.get('pitch_number', 0)),
-                at_bat_number=int(row.get('at_bat_number', 0)),
-                events=row.get('events'),
-                description=row.get('description'),
-                type=row.get('type'),
-                home_score=int(row.get('home_score', 0)),
-                away_score=int(row.get('away_score', 0)),
+                player_name=str(row.get('player_name', '')),
+                batter=_safe_int(row.get('batter', 0)),
+                home_team=str(row.get('home_team', '')),
+                away_team=str(row.get('away_team', '')),
+                inning_topbot=str(row.get('inning_topbot', '')),
+                inning=_safe_int(row.get('inning', 0)),
+                pitch_type=str(row.get('pitch_type')) if pd.notna(row.get('pitch_type')) else None,
+                pitch_type_simplified=str(row.get('pitch_type_simplified')) if pd.notna(row.get('pitch_type_simplified')) else None,
+                pitch_name=str(row.get('pitch_name')) if pd.notna(row.get('pitch_name')) else None,
+                release_speed=_safe_float(row.get('release_speed')),
+                release_spin_rate=_safe_int(row.get('release_spin_rate')) if pd.notna(row.get('release_spin_rate')) else None,
+                plate_x=_safe_float(row.get('plate_x')),
+                plate_z=_safe_float(row.get('plate_z')),
+                balls=_safe_int(row.get('balls', 0)),
+                strikes=_safe_int(row.get('strikes', 0)),
+                outs_when_up=_safe_int(row.get('outs_when_up', 0)),
+                pitch_number=_safe_int(row.get('pitch_number', 0)),
+                at_bat_number=_safe_int(row.get('at_bat_number', 0)),
+                events=str(row.get('events')) if pd.notna(row.get('events')) else None,
+                description=str(row.get('description')) if pd.notna(row.get('description')) else None,
+                type=str(row.get('type')) if pd.notna(row.get('type')) else None,
+                home_score=_safe_int(row.get('home_score', 0)),
+                away_score=_safe_int(row.get('away_score', 0)),
             )
             db.add(pitch)
 

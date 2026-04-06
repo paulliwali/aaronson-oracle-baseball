@@ -26,7 +26,9 @@ class TransformerPredictor(BasePredictorModel):
         if not model_path.exists():
             return
 
+        import pickle
         import sys
+
         import torch
 
         training_dir = str(Path(__file__).parent.parent.parent.parent.parent / "training")
@@ -41,7 +43,20 @@ class TransformerPredictor(BasePredictorModel):
         else:
             self._device = torch.device("cpu")
 
-        checkpoint = torch.load(model_path, map_location=self._device, weights_only=False)
+        # PitchGPTConfig was pickled under __main__ — remap it
+        _orig_find_class = pickle.Unpickler.find_class
+
+        def _patched_find_class(self_unpickler, module, name):
+            if name == "PitchGPTConfig":
+                return PitchGPTConfig
+            return _orig_find_class(self_unpickler, module, name)
+
+        pickle.Unpickler.find_class = _patched_find_class
+        try:
+            checkpoint = torch.load(model_path, map_location=self._device, weights_only=False)
+        finally:
+            pickle.Unpickler.find_class = _orig_find_class
+
         self._config = checkpoint["config"]
         self._model = PitchGPT(self._config).to(self._device)
         self._model.load_state_dict(checkpoint["model_state_dict"])

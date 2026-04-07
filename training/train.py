@@ -27,6 +27,7 @@ from prepare import (
     evaluate,
     encode_pitch,
     iter_games,
+    build_pitcher_vocab,
 )
 
 
@@ -44,6 +45,7 @@ class PitchGPTConfig:
     n_innings: int = 13
     n_stand: int = 2
     n_phand: int = 2
+    n_pitchers: int = 64  # 0 = unknown, rest reserved for training-set pitchers
 
 
 class PitchGPT(nn.Module):
@@ -62,6 +64,7 @@ class PitchGPT(nn.Module):
         self.phand_embed = nn.Embedding(config.n_phand, e)
         self.ctx_proj = nn.Linear(6 * e, d)
         self.pos_embed = nn.Embedding(config.seq_len, d)
+        self.pitcher_embed = nn.Embedding(config.n_pitchers, d)
 
         encoder_layer = nn.TransformerEncoderLayer(
             d_model=d,
@@ -75,11 +78,15 @@ class PitchGPT(nn.Module):
         self.ln_f = nn.LayerNorm(d)
         self.head = nn.Linear(d, config.n_pitch_types)
 
-    def forward(self, pitch_ids, context):
+    def forward(self, pitch_ids, context, pitcher_ids=None):
         B, T = pitch_ids.shape
         device = pitch_ids.device
 
         x = self.pitch_embed(pitch_ids)
+        if pitcher_ids is None:
+            pitcher_ids = torch.zeros(B, dtype=torch.long, device=device)
+        pitcher_vec = self.pitcher_embed(pitcher_ids.clamp(0, self.config.n_pitchers - 1))
+        x = x + pitcher_vec.unsqueeze(1)  # broadcast over sequence
 
         balls = context[:, :, 0].clamp(0, 3)
         strikes = context[:, :, 1].clamp(0, 2)
@@ -107,7 +114,7 @@ class PitchGPT(nn.Module):
         return self.head(x)
 
 
-def make_predict_fn(model, config, device):
+def make_predict_fn(model, config, device, pitcher_vocab):
     """Create a predict_fn compatible with prepare.evaluate()."""
     model.eval()
 
@@ -117,6 +124,9 @@ def make_predict_fn(model, config, device):
 
         pitch_ids = []
         ctx_data = []
+        pitcher_id_raw = int(game_df["pitcher"].iloc[0]) if "pitcher" in game_df.columns else 0
+        pitcher_idx = pitcher_vocab.get(pitcher_id_raw, 0)
+        pitcher_t = torch.tensor([pitcher_idx], device=device)
 
         for i in range(n):
             row = game_df.iloc[i]
@@ -137,7 +147,7 @@ def make_predict_fn(model, config, device):
             c_tensor = torch.tensor([ctx_data[-seq_len:]], device=device)
 
             with torch.no_grad():
-                logits = model(p_tensor, c_tensor)
+                logits = model(p_tensor, c_tensor, pitcher_t)
                 pred_idx = logits[0, -1].argmax().item()
                 predictions.append(PITCH_CLASSES[pred_idx])
 
@@ -163,18 +173,23 @@ def main():
     splits = make_splits(df)
     print(f"Train: {len(splits['train']):,} | Val: {len(splits['val']):,} | Test: {len(splits['test']):,}")
 
-    config = PitchGPTConfig()
+    pitcher_vocab = build_pitcher_vocab(splits["train"])
+    print(f"Pitcher vocab: {len(pitcher_vocab)} pitchers (+ 1 unknown slot)")
+
+    config = PitchGPTConfig(n_pitchers=len(pitcher_vocab) + 1)
 
     print("Extracting sequences...")
-    train_ctx, train_pitch = extract_sequences(splits["train"], config.seq_len)
-    val_ctx, val_pitch = extract_sequences(splits["val"], config.seq_len)
+    train_ctx, train_pitch, train_pidx = extract_sequences(splits["train"], config.seq_len, pitcher_vocab)
+    val_ctx, val_pitch, val_pidx = extract_sequences(splits["val"], config.seq_len, pitcher_vocab)
     print(f"Train: {len(train_ctx)} games | Val: {len(val_ctx)} games")
 
     # Convert to tensors
     train_ctx_t = torch.tensor(np.array(train_ctx), device=device)
     train_pitch_t = torch.tensor(np.array(train_pitch), device=device)
+    train_pidx_t = torch.tensor(np.array(train_pidx), device=device)
     val_ctx_t = torch.tensor(np.array(val_ctx), device=device)
     val_pitch_t = torch.tensor(np.array(val_pitch), device=device)
+    val_pidx_t = torch.tensor(np.array(val_pidx), device=device)
 
     # Model
     model = PitchGPT(config).to(device)
@@ -202,13 +217,14 @@ def main():
             idx = perm[batch_start:batch_start + batch_size]
             pitch_batch = train_pitch_t[idx]
             ctx_batch = train_ctx_t[idx]
+            pidx_batch = train_pidx_t[idx]
 
             # Shift: input is pitches[:-1], target is pitches[1:]
             input_pitch = pitch_batch[:, :-1].clamp(min=0)
             input_ctx = ctx_batch[:, :-1]
             target = pitch_batch[:, 1:]
 
-            logits = model(input_pitch, input_ctx)
+            logits = model(input_pitch, input_ctx, pidx_batch)
 
             # Mask padded positions (target == -1)
             mask = target >= 0
@@ -231,7 +247,7 @@ def main():
             val_input = val_pitch_t[:, :-1].clamp(min=0)
             val_ctx_in = val_ctx_t[:, :-1]
             val_target = val_pitch_t[:, 1:]
-            val_logits = model(val_input, val_ctx_in)
+            val_logits = model(val_input, val_ctx_in, val_pidx_t)
             val_mask = val_target >= 0
             val_loss = F.cross_entropy(val_logits[val_mask], val_target[val_mask]).item()
 
@@ -254,11 +270,12 @@ def main():
     torch.save({
         "model_state_dict": model.state_dict(),
         "config": config,
+        "pitcher_vocab": pitcher_vocab,
     }, model_path)
 
     # Evaluate
     print("\nEvaluating on test set...")
-    predict_fn = make_predict_fn(model, config, device)
+    predict_fn = make_predict_fn(model, config, device, pitcher_vocab)
     results = evaluate(predict_fn, split="test")
 
     # Print results

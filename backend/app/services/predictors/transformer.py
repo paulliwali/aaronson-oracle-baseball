@@ -16,6 +16,7 @@ class TransformerPredictor(BasePredictorModel):
         self._model = None
         self._config = None
         self._device = None
+        self._pitcher_vocab = {}
         self._load_attempted = False
 
     def _load_model(self):
@@ -52,6 +53,7 @@ class TransformerPredictor(BasePredictorModel):
         checkpoint = torch.load(model_path, map_location=self._device, weights_only=False)
 
         self._config = checkpoint["config"]
+        self._pitcher_vocab = checkpoint.get("pitcher_vocab", {}) or {}
         self._model = PitchGPT(self._config).to(self._device)
         self._model.load_state_dict(checkpoint["model_state_dict"])
         self._model.eval()
@@ -68,6 +70,9 @@ class TransformerPredictor(BasePredictorModel):
 
         pitch_ids = []
         ctx_data = []
+        pitcher_id_raw = int(game_stats_df["pitcher"].iloc[0]) if "pitcher" in game_stats_df.columns and len(game_stats_df) > 0 else 0
+        pitcher_idx = self._pitcher_vocab.get(pitcher_id_raw, 0)
+        pitcher_t = torch.tensor([pitcher_idx], device=self._device)
 
         for i in range(n):
             row = game_stats_df.iloc[i]
@@ -89,7 +94,7 @@ class TransformerPredictor(BasePredictorModel):
             c_tensor = torch.tensor([ctx_data[-seq_len:]], device=self._device)
 
             with torch.no_grad():
-                logits = self._model(p_tensor, c_tensor)
+                logits = self._model(p_tensor, c_tensor, pitcher_t)
                 pred_idx = logits[0, -1].argmax().item()
                 predictions.append(PITCH_CLASSES[pred_idx])
 

@@ -185,15 +185,26 @@ def _handed_to_idx(series: pd.Series) -> np.ndarray:
     return series.fillna("R").map({"L": 0, "R": 1}).fillna(1).values.astype(np.int64)
 
 
-def extract_sequences(df: pd.DataFrame, seq_len: int = 256):
+def build_pitcher_vocab(df: pd.DataFrame) -> dict:
+    """Build pitcher_id -> idx mapping. Reserves idx 0 for unknown pitchers."""
+    pitcher_col = "pitcher" if "pitcher" in df.columns else "player_name"
+    unique = sorted(df[pitcher_col].dropna().unique().tolist())
+    return {int(pid): i + 1 for i, pid in enumerate(unique)}
+
+
+def extract_sequences(df: pd.DataFrame, seq_len: int = 256, pitcher_vocab: dict = None):
     """Extract pitch sequences for sequence model training.
 
-    Returns lists of (context_array, pitch_array) per game.
+    Returns lists of (context_array, pitch_array, pitcher_idx) per game.
     context_array: (T, 6) int64 — [balls, strikes, outs, inning, stand, p_throws]
     pitch_array: (T,) int64 — pitch type indices, padded with -1
+    pitcher_idx: int — vocab index of the pitcher (0 = unknown)
     """
     sequences_ctx = []
     sequences_pitch = []
+    sequences_pitcher = []
+
+    pitcher_col = "pitcher" if "pitcher" in df.columns else "player_name"
 
     for game_df in iter_games(df):
         pitches = game_df["pitch_type_simplified"].map(encode_pitch).values.astype(np.int64)
@@ -206,6 +217,9 @@ def extract_sequences(df: pd.DataFrame, seq_len: int = 256):
 
         ctx = np.stack([balls, strikes, outs, innings, stand, phand], axis=1)
 
+        pitcher_id = int(game_df[pitcher_col].iloc[0]) if pitcher_col in game_df.columns else 0
+        pitcher_idx = pitcher_vocab.get(pitcher_id, 0) if pitcher_vocab else 0
+
         n = len(pitches)
         if n > seq_len:
             pitches = pitches[:seq_len]
@@ -217,8 +231,9 @@ def extract_sequences(df: pd.DataFrame, seq_len: int = 256):
 
         sequences_pitch.append(pitches)
         sequences_ctx.append(ctx)
+        sequences_pitcher.append(pitcher_idx)
 
-    return sequences_ctx, sequences_pitch
+    return sequences_ctx, sequences_pitch, sequences_pitcher
 
 
 # ---------------------------------------------------------------------------

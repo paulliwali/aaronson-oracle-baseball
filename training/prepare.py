@@ -180,11 +180,16 @@ def extract_all_features(df: pd.DataFrame) -> Tuple[np.ndarray, np.ndarray]:
     return np.concatenate(all_features), np.concatenate(all_labels)
 
 
+def _handed_to_idx(series: pd.Series) -> np.ndarray:
+    """Map L/R handedness to 0/1. Missing values default to R (1)."""
+    return series.fillna("R").map({"L": 0, "R": 1}).fillna(1).values.astype(np.int64)
+
+
 def extract_sequences(df: pd.DataFrame, seq_len: int = 256):
     """Extract pitch sequences for sequence model training.
 
     Returns lists of (context_array, pitch_array) per game.
-    context_array: (T, 4) int64 — [balls, strikes, outs, inning]
+    context_array: (T, 6) int64 — [balls, strikes, outs, inning, stand, p_throws]
     pitch_array: (T,) int64 — pitch type indices, padded with -1
     """
     sequences_ctx = []
@@ -196,8 +201,10 @@ def extract_sequences(df: pd.DataFrame, seq_len: int = 256):
         strikes = game_df["strikes"].fillna(0).values.astype(np.int64)
         outs = game_df["outs_when_up"].fillna(0).values.astype(np.int64)
         innings = game_df["inning"].fillna(1).values.astype(np.int64).clip(1, 12)
+        stand = _handed_to_idx(game_df["stand"]) if "stand" in game_df.columns else np.ones(len(pitches), dtype=np.int64)
+        phand = _handed_to_idx(game_df["p_throws"]) if "p_throws" in game_df.columns else np.ones(len(pitches), dtype=np.int64)
 
-        ctx = np.stack([balls, strikes, outs, innings], axis=1)
+        ctx = np.stack([balls, strikes, outs, innings, stand, phand], axis=1)
 
         n = len(pitches)
         if n > seq_len:

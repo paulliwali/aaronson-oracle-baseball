@@ -1,132 +1,438 @@
 {
-  "Naive (Always Fast)": {
-    "accuracy": 0.5643,
-    "per_class": {
-      "fast": 1.0,
-      "breaking": 0.0,
-      "off-speed": 0.0
-    },
-    "confusion": {
-      "fast": {
-        "fast": 14061,
-        "breaking": 0,
-        "off-speed": 0
+  "overall": {
+    "Naive (Always Fast)": {
+      "accuracy": 0.5643,
+      "per_class": {
+        "fast": 1.0,
+        "breaking": 0.0,
+        "off-speed": 0.0
       },
-      "breaking": {
-        "fast": 8109,
-        "breaking": 0,
-        "off-speed": 0
+      "confusion": {
+        "fast": {
+          "fast": 14061,
+          "breaking": 0,
+          "off-speed": 0
+        },
+        "breaking": {
+          "fast": 8109,
+          "breaking": 0,
+          "off-speed": 0
+        },
+        "off-speed": {
+          "fast": 2747,
+          "breaking": 0,
+          "off-speed": 0
+        }
       },
-      "off-speed": {
-        "fast": 2747,
-        "breaking": 0,
-        "off-speed": 0
-      }
+      "n_pitches": 24917
     },
-    "n_pitches": 24917
+    "N-Gram (n=3)": {
+      "accuracy": 0.5335,
+      "per_class": {
+        "fast": 0.7795,
+        "breaking": 0.2496,
+        "off-speed": 0.1121
+      },
+      "confusion": {
+        "fast": {
+          "fast": 10961,
+          "breaking": 2535,
+          "off-speed": 565
+        },
+        "breaking": {
+          "fast": 5703,
+          "breaking": 2024,
+          "off-speed": 382
+        },
+        "off-speed": {
+          "fast": 1858,
+          "breaking": 581,
+          "off-speed": 308
+        }
+      },
+      "n_pitches": 24917
+    },
+    "N-Gram (n=4)": {
+      "accuracy": 0.5376,
+      "per_class": {
+        "fast": 0.8223,
+        "breaking": 0.1977,
+        "off-speed": 0.0837
+      },
+      "confusion": {
+        "fast": {
+          "fast": 11563,
+          "breaking": 2048,
+          "off-speed": 450
+        },
+        "breaking": {
+          "fast": 6222,
+          "breaking": 1603,
+          "off-speed": 284
+        },
+        "off-speed": {
+          "fast": 2095,
+          "breaking": 422,
+          "off-speed": 230
+        }
+      },
+      "n_pitches": 24917
+    },
+    "Frequency-Based (Oracle)": {
+      "accuracy": 0.4762,
+      "per_class": {
+        "fast": 0.5967,
+        "breaking": 0.3607,
+        "off-speed": 0.2002
+      },
+      "confusion": {
+        "fast": {
+          "fast": 8390,
+          "breaking": 4266,
+          "off-speed": 1405
+        },
+        "breaking": {
+          "fast": 4356,
+          "breaking": 2925,
+          "off-speed": 828
+        },
+        "off-speed": {
+          "fast": 1354,
+          "breaking": 843,
+          "off-speed": 550
+        }
+      },
+      "n_pitches": 24917
+    },
+    "Markov Context": {
+      "accuracy": 0.5552,
+      "per_class": {
+        "fast": 0.9493,
+        "breaking": 0.054,
+        "off-speed": 0.0175
+      },
+      "confusion": {
+        "fast": {
+          "fast": 13348,
+          "breaking": 589,
+          "off-speed": 124
+        },
+        "breaking": {
+          "fast": 7613,
+          "breaking": 438,
+          "off-speed": 58
+        },
+        "off-speed": {
+          "fast": 2629,
+          "breaking": 70,
+          "off-speed": 48
+        }
+      },
+      "n_pitches": 24917
+    },
+    "Transformer": {
+      "accuracy": 0.5996,
+      "per_class": {
+        "fast": 0.9595,
+        "breaking": 0.1632,
+        "off-speed": 0.0455
+      },
+      "confusion": {
+        "fast": {
+          "fast": 13492,
+          "breaking": 525,
+          "off-speed": 44
+        },
+        "breaking": {
+          "fast": 6731,
+          "breaking": 1323,
+          "off-speed": 55
+        },
+        "off-speed": {
+          "fast": 2424,
+          "breaking": 198,
+          "off-speed": 125
+        }
+      },
+      "n_pitches": 24917
+    }
   },
-  "N-Gram (n=3)": {
-    "accuracy": 0.5335,
-    "per_class": {
-      "fast": 0.7795,
-      "breaking": 0.2496,
-      "off-speed": 0.1121
-    },
-    "confusion": {
-      "fast": {
-        "fast": 10961,
-        "breaking": 2535,
-        "off-speed": 565
-      },
-      "breaking": {
-        "fast": 5703,
-        "breaking": 2024,
-        "off-speed": 382
-      },
-      "off-speed": {
-        "fast": 1858,
-        "breaking": 581,
-        "off-speed": 308
+  "per_pitcher": {
+    "Verlander, Justin": {
+      "fast_pct": 0.4839,
+      "n_pitches": 1213,
+      "models": {
+        "Naive (Always Fast)": 0.4839,
+        "N-Gram (n=3)": 0.4452,
+        "N-Gram (n=4)": 0.4452,
+        "Frequency-Based (Oracle)": 0.4378,
+        "Markov Context": 0.4782,
+        "Transformer": 0.5293
       }
     },
-    "n_pitches": 24917
-  },
-  "N-Gram (n=4)": {
-    "accuracy": 0.5376,
-    "per_class": {
-      "fast": 0.8223,
-      "breaking": 0.1977,
-      "off-speed": 0.0837
-    },
-    "confusion": {
-      "fast": {
-        "fast": 11563,
-        "breaking": 2048,
-        "off-speed": 450
-      },
-      "breaking": {
-        "fast": 6222,
-        "breaking": 1603,
-        "off-speed": 284
-      },
-      "off-speed": {
-        "fast": 2095,
-        "breaking": 422,
-        "off-speed": 230
+    "Scherzer, Max": {
+      "fast_pct": 0.5139,
+      "n_pitches": 755,
+      "models": {
+        "Naive (Always Fast)": 0.5139,
+        "N-Gram (n=3)": 0.4675,
+        "N-Gram (n=4)": 0.4834,
+        "Frequency-Based (Oracle)": 0.4212,
+        "Markov Context": 0.5007,
+        "Transformer": 0.5298
       }
     },
-    "n_pitches": 24917
-  },
-  "Frequency-Based (Oracle)": {
-    "accuracy": 0.4834,
-    "per_class": {
-      "fast": 0.5979,
-      "breaking": 0.3775,
-      "off-speed": 0.2104
-    },
-    "confusion": {
-      "fast": {
-        "fast": 8407,
-        "breaking": 4332,
-        "off-speed": 1322
-      },
-      "breaking": {
-        "fast": 4246,
-        "breaking": 3061,
-        "off-speed": 802
-      },
-      "off-speed": {
-        "fast": 1292,
-        "breaking": 877,
-        "off-speed": 578
+    "Darvish, Yu": {
+      "fast_pct": 0.4037,
+      "n_pitches": 961,
+      "models": {
+        "Naive (Always Fast)": 0.4037,
+        "N-Gram (n=3)": 0.4755,
+        "N-Gram (n=4)": 0.4381,
+        "Frequency-Based (Oracle)": 0.4464,
+        "Markov Context": 0.4142,
+        "Transformer": 0.5723
       }
     },
-    "n_pitches": 24917
-  },
-  "Markov Context": {
-    "accuracy": 0.5552,
-    "per_class": {
-      "fast": 0.9493,
-      "breaking": 0.054,
-      "off-speed": 0.0175
-    },
-    "confusion": {
-      "fast": {
-        "fast": 13348,
-        "breaking": 589,
-        "off-speed": 124
-      },
-      "breaking": {
-        "fast": 7613,
-        "breaking": 438,
-        "off-speed": 58
-      },
-      "off-speed": {
-        "fast": 2629,
-        "breaking": 70,
-        "off-speed": 48
+    "Sale, Chris": {
+      "fast_pct": 0.4447,
+      "n_pitches": 805,
+      "models": {
+        "Naive (Always Fast)": 0.4447,
+        "N-Gram (n=3)": 0.4497,
+        "N-Gram (n=4)": 0.4385,
+        "Frequency-Based (Oracle)": 0.4124,
+        "Markov Context": 0.4311,
+        "Transformer": 0.5217
       }
     },
-    "n_pitches": 24917
+    "Cole, Gerrit": {
+      "fast_pct": 0.6001,
+      "n_pitches": 1363,
+      "models": {
+        "Naive (Always Fast)": 0.6001,
+        "N-Gram (n=3)": 0.5429,
+        "N-Gram (n=4)": 0.5605,
+        "Frequency-Based (Oracle)": 0.515,
+        "Markov Context": 0.5899,
+        "Transformer": 0.6185
+      }
+    },
+    "Gray, Sonny": {
+      "fast_pct": 0.6018,
+      "n_pitches": 1213,
+      "models": {
+        "Naive (Always Fast)": 0.6018,
+        "N-Gram (n=3)": 0.5598,
+        "N-Gram (n=4)": 0.5655,
+        "Frequency-Based (Oracle)": 0.4864,
+        "Markov Context": 0.5985,
+        "Transformer": 0.6068
+      }
+    },
+    "Wheeler, Zack": {
+      "fast_pct": 0.7587,
+      "n_pitches": 1558,
+      "models": {
+        "Naive (Always Fast)": 0.7587,
+        "N-Gram (n=3)": 0.7291,
+        "N-Gram (n=4)": 0.7298,
+        "Frequency-Based (Oracle)": 0.6457,
+        "Markov Context": 0.7272,
+        "Transformer": 0.7587
+      }
+    },
+    "Gausman, Kevin": {
+      "fast_pct": 0.9243,
+      "n_pitches": 1426,
+      "models": {
+        "Naive (Always Fast)": 0.9243,
+        "N-Gram (n=3)": 0.9137,
+        "N-Gram (n=4)": 0.9102,
+        "Frequency-Based (Oracle)": 0.871,
+        "Markov Context": 0.9088,
+        "Transformer": 0.9243
+      }
+    },
+    "Nola, Aaron": {
+      "fast_pct": 0.5808,
+      "n_pitches": 1646,
+      "models": {
+        "Naive (Always Fast)": 0.5808,
+        "N-Gram (n=3)": 0.534,
+        "N-Gram (n=4)": 0.531,
+        "Frequency-Based (Oracle)": 0.4696,
+        "Markov Context": 0.5705,
+        "Transformer": 0.5911
+      }
+    },
+    "Snell, Blake": {
+      "fast_pct": 0.456,
+      "n_pitches": 1147,
+      "models": {
+        "Naive (Always Fast)": 0.456,
+        "N-Gram (n=3)": 0.4481,
+        "N-Gram (n=4)": 0.4638,
+        "Frequency-Based (Oracle)": 0.3897,
+        "Markov Context": 0.4446,
+        "Transformer": 0.4969
+      }
+    },
+    "Glasnow, Tyler": {
+      "fast_pct": 0.4927,
+      "n_pitches": 615,
+      "models": {
+        "Naive (Always Fast)": 0.4927,
+        "N-Gram (n=3)": 0.5317,
+        "N-Gram (n=4)": 0.5203,
+        "Frequency-Based (Oracle)": 0.5106,
+        "Markov Context": 0.5089,
+        "Transformer": 0.6065
+      }
+    },
+    "Lugo, Seth": {
+      "fast_pct": 0.5456,
+      "n_pitches": 845,
+      "models": {
+        "Naive (Always Fast)": 0.5456,
+        "N-Gram (n=3)": 0.484,
+        "N-Gram (n=4)": 0.4994,
+        "Frequency-Based (Oracle)": 0.4154,
+        "Markov Context": 0.5385,
+        "Transformer": 0.5716
+      }
+    },
+    "Houck, Tanner": {
+      "fast_pct": 0.6094,
+      "n_pitches": 699,
+      "models": {
+        "Naive (Always Fast)": 0.6094,
+        "N-Gram (n=3)": 0.5637,
+        "N-Gram (n=4)": 0.5379,
+        "Frequency-Based (Oracle)": 0.5379,
+        "Markov Context": 0.6066,
+        "Transformer": 0.6409
+      }
+    },
+    "Webb, Logan": {
+      "fast_pct": 0.526,
+      "n_pitches": 1443,
+      "models": {
+        "Naive (Always Fast)": 0.526,
+        "N-Gram (n=3)": 0.4837,
+        "N-Gram (n=4)": 0.5059,
+        "Frequency-Based (Oracle)": 0.413,
+        "Markov Context": 0.5107,
+        "Transformer": 0.5599
+      }
+    },
+    "Ohtani, Shohei": {
+      "fast_pct": 0.61,
+      "n_pitches": 777,
+      "models": {
+        "Naive (Always Fast)": 0.61,
+        "N-Gram (n=3)": 0.5753,
+        "N-Gram (n=4)": 0.5663,
+        "Frequency-Based (Oracle)": 0.5367,
+        "Markov Context": 0.5959,
+        "Transformer": 0.6641
+      }
+    },
+    "McClanahan, Shane": {
+      "fast_pct": 0.4016,
+      "n_pitches": 645,
+      "models": {
+        "Naive (Always Fast)": 0.4016,
+        "N-Gram (n=3)": 0.369,
+        "N-Gram (n=4)": 0.3938,
+        "Frequency-Based (Oracle)": 0.3442,
+        "Markov Context": 0.3938,
+        "Transformer": 0.4496
+      }
+    },
+    "Valdez, Framber": {
+      "fast_pct": 0.3996,
+      "n_pitches": 1419,
+      "models": {
+        "Naive (Always Fast)": 0.3996,
+        "N-Gram (n=3)": 0.4278,
+        "N-Gram (n=4)": 0.4221,
+        "Frequency-Based (Oracle)": 0.3693,
+        "Markov Context": 0.4073,
+        "Transformer": 0.5053
+      }
+    },
+    "Ragans, Cole": {
+      "fast_pct": 0.5417,
+      "n_pitches": 840,
+      "models": {
+        "Naive (Always Fast)": 0.5417,
+        "N-Gram (n=3)": 0.4833,
+        "N-Gram (n=4)": 0.5024,
+        "Frequency-Based (Oracle)": 0.3952,
+        "Markov Context": 0.5274,
+        "Transformer": 0.5452
+      }
+    },
+    "Gallen, Zac": {
+      "fast_pct": 0.4773,
+      "n_pitches": 1517,
+      "models": {
+        "Naive (Always Fast)": 0.4773,
+        "N-Gram (n=3)": 0.4469,
+        "N-Gram (n=4)": 0.4621,
+        "Frequency-Based (Oracle)": 0.3949,
+        "Markov Context": 0.474,
+        "Transformer": 0.5135
+      }
+    },
+    "Burnes, Corbin": {
+      "fast_pct": 0.536,
+      "n_pitches": 1388,
+      "models": {
+        "Naive (Always Fast)": 0.536,
+        "N-Gram (n=3)": 0.4798,
+        "N-Gram (n=4)": 0.4914,
+        "Frequency-Based (Oracle)": 0.4344,
+        "Markov Context": 0.5252,
+        "Transformer": 0.5526
+      }
+    },
+    "Skubal, Tarik": {
+      "fast_pct": 0.5577,
+      "n_pitches": 988,
+      "models": {
+        "Naive (Always Fast)": 0.5577,
+        "N-Gram (n=3)": 0.4696,
+        "N-Gram (n=4)": 0.5111,
+        "Frequency-Based (Oracle)": 0.4291,
+        "Markov Context": 0.5516,
+        "Transformer": 0.5628
+      }
+    },
+    "Strider, Spencer": {
+      "fast_pct": 0.5803,
+      "n_pitches": 822,
+      "models": {
+        "Naive (Always Fast)": 0.5803,
+        "N-Gram (n=3)": 0.5304,
+        "N-Gram (n=4)": 0.517,
+        "Frequency-Based (Oracle)": 0.4635,
+        "Markov Context": 0.5693,
+        "Transformer": 0.5985
+      }
+    },
+    "Miller, Bryce": {
+      "fast_pct": 0.7368,
+      "n_pitches": 832,
+      "models": {
+        "Naive (Always Fast)": 0.7368,
+        "N-Gram (n=3)": 0.6731,
+        "N-Gram (n=4)": 0.6611,
+        "Frequency-Based (Oracle)": 0.6202,
+        "Markov Context": 0.7151,
+        "Transformer": 0.744
+      }
+    }
   }
 }

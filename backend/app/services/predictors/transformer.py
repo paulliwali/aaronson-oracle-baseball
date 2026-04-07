@@ -26,7 +26,6 @@ class TransformerPredictor(BasePredictorModel):
         if not model_path.exists():
             return
 
-        import pickle
         import sys
 
         import torch
@@ -43,19 +42,14 @@ class TransformerPredictor(BasePredictorModel):
         else:
             self._device = torch.device("cpu")
 
-        # PitchGPTConfig was pickled under __main__ — remap it
-        _orig_find_class = pickle.Unpickler.find_class
+        # PitchGPTConfig was pickled under __main__ / __mp_main__ — inject the
+        # class into whichever module name the unpickler will look up.
+        for mod_name in ("__main__", "__mp_main__"):
+            mod = sys.modules.get(mod_name)
+            if mod is not None and not hasattr(mod, "PitchGPTConfig"):
+                setattr(mod, "PitchGPTConfig", PitchGPTConfig)
 
-        def _patched_find_class(self_unpickler, module, name):
-            if name == "PitchGPTConfig":
-                return PitchGPTConfig
-            return _orig_find_class(self_unpickler, module, name)
-
-        pickle.Unpickler.find_class = _patched_find_class
-        try:
-            checkpoint = torch.load(model_path, map_location=self._device, weights_only=False)
-        finally:
-            pickle.Unpickler.find_class = _orig_find_class
+        checkpoint = torch.load(model_path, map_location=self._device, weights_only=False)
 
         self._config = checkpoint["config"]
         self._model = PitchGPT(self._config).to(self._device)
@@ -83,7 +77,9 @@ class TransformerPredictor(BasePredictorModel):
             strikes = int(row.get("strikes", 0))
             outs = int(row.get("outs_when_up", 0))
             inning = min(int(row.get("inning", 1)), 12)
-            ctx_data.append([balls, strikes, outs, inning])
+            stand = 0 if str(row.get("stand", "R")) == "L" else 1
+            phand = 0 if str(row.get("p_throws", "R")) == "L" else 1
+            ctx_data.append([balls, strikes, outs, inning, stand, phand])
 
             if i == 0:
                 continue

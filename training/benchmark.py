@@ -1,4 +1,9 @@
-"""Benchmark prediction models against the test split."""
+"""Benchmark prediction models against the test split.
+
+Produces:
+- Overall model comparison (per-class + confusion)
+- Per-pitcher breakdown with lift over naive baseline (exposes junk-baller performance)
+"""
 
 import json
 import sys
@@ -15,6 +20,7 @@ from prepare import load_all_data, make_splits, iter_games, PITCH_CLASSES
 
 
 MODEL_CARD_PATH = PROJECT_ROOT / "MODEL_CARD.md"
+NAIVE_NAME = "Naive (Always Fast)"
 
 
 def evaluate_model_on_games(model: BasePredictorModel, df: pd.DataFrame) -> dict:
@@ -56,11 +62,40 @@ def evaluate_model_on_games(model: BasePredictorModel, df: pd.DataFrame) -> dict
     }
 
 
-def generate_model_card(results: dict):
+def evaluate_per_pitcher(models: list, df: pd.DataFrame) -> dict:
+    """Return nested dict: {pitcher_name: {model_name: {accuracy, n_pitches, fast_pct}}}."""
+    pitcher_col = "pitcher" if "pitcher" in df.columns else "player_name"
+    results = {}
+
+    for pitcher_id, pitcher_df in df.groupby(pitcher_col):
+        name = str(pitcher_df["player_name"].iloc[0]) if "player_name" in pitcher_df.columns else str(pitcher_id)
+        fast_pct = (pitcher_df["pitch_type_simplified"] == "fast").mean()
+        n_pitches = len(pitcher_df)
+
+        pitcher_results = {"fast_pct": round(float(fast_pct), 4), "n_pitches": n_pitches, "models": {}}
+        for model in models:
+            all_preds = []
+            all_actuals = []
+            for game_df in iter_games(pitcher_df):
+                preds = model.predict(game_df)
+                all_preds.extend(preds)
+                all_actuals.extend(game_df["pitch_type_simplified"].tolist())
+            if all_preds:
+                acc = sum(p == a for p, a in zip(all_preds, all_actuals)) / len(all_preds)
+            else:
+                acc = 0.0
+            pitcher_results["models"][model.name] = round(acc, 4)
+
+        results[name] = pitcher_results
+
+    return results
+
+
+def generate_model_card(results: dict, per_pitcher: dict):
     lines = [
         "# Model Card: Pitch Prediction Models",
         "",
-        "## Benchmark Results",
+        "## Overall Benchmark",
         "",
         "All models predict simplified pitch types: **fast**, **breaking**, **off-speed**.",
         "",
@@ -80,10 +115,44 @@ def generate_model_card(results: dict):
         )
 
     lines.append("")
+    lines.append("## Per-Pitcher Lift Over Naive Baseline")
+    lines.append("")
+    lines.append("Sorted by fastball rate (low = junk ballers, high = fastball-heavy).")
+    lines.append("**Lift** = best model accuracy − naive (always-fast) accuracy. Positive = model beats naive.")
+    lines.append("")
 
+    model_names = [m for m in results.keys() if m != NAIVE_NAME]
+    header = "| Pitcher | Fast% | N | Naive | " + " | ".join(model_names) + " | Best Lift |"
+    sep = "|---------|-------|---|-------|" + "|".join(["-" * max(len(m), 6) for m in model_names]) + "|----------|"
+    lines.append(header)
+    lines.append(sep)
+
+    sorted_pitchers = sorted(per_pitcher.items(), key=lambda kv: kv[1]["fast_pct"])
+    for name, data in sorted_pitchers:
+        naive_acc = data["models"].get(NAIVE_NAME, 0.0)
+        row = [
+            name,
+            f"{data['fast_pct']*100:.1f}%",
+            f"{data['n_pitches']:,}",
+            f"{naive_acc:.3f}",
+        ]
+        best_other = 0.0
+        for m in model_names:
+            acc = data["models"].get(m, 0.0)
+            row.append(f"{acc:.3f}")
+            if acc > best_other:
+                best_other = acc
+        lift = best_other - naive_acc
+        sign = "+" if lift >= 0 else ""
+        row.append(f"{sign}{lift:.3f}")
+        lines.append("| " + " | ".join(row) + " |")
+
+    lines.append("")
+    lines.append("## Confusion Matrices")
+    lines.append("")
     for model_name, metrics in results.items():
         if "confusion" in metrics:
-            lines.append(f"<details><summary>Confusion: {model_name}</summary>")
+            lines.append(f"<details><summary>{model_name}</summary>")
             lines.append("")
             lines.append("| Actual \\ Predicted | fast | breaking | off-speed |")
             lines.append("|-------------------|------|----------|-----------|")
@@ -123,12 +192,20 @@ def main():
             print(f"    {cls:12s}: {acc:.4f}")
         print()
 
+    print("Per-pitcher breakdown...")
+    per_pitcher = evaluate_per_pitcher(AVAILABLE_MODELS, test_df)
+    for name, data in sorted(per_pitcher.items(), key=lambda kv: kv[1]["fast_pct"]):
+        naive = data["models"].get(NAIVE_NAME, 0.0)
+        best = max((v for k, v in data["models"].items() if k != NAIVE_NAME), default=0.0)
+        lift = best - naive
+        print(f"  {name:30s} fast={data['fast_pct']*100:5.1f}%  naive={naive:.3f}  best={best:.3f}  lift={lift:+.3f}")
+
     results_path = PROJECT_ROOT / "training" / "benchmark_results.json"
     with open(results_path, "w") as f:
-        json.dump(results, f, indent=2)
-    print(f"Saved results to {results_path}")
+        json.dump({"overall": results, "per_pitcher": per_pitcher}, f, indent=2)
+    print(f"\nSaved results to {results_path}")
 
-    generate_model_card(results)
+    generate_model_card(results, per_pitcher)
 
 
 if __name__ == "__main__":

@@ -42,6 +42,8 @@ class PitchGPTConfig:
     n_strikes: int = 3
     n_outs: int = 3
     n_innings: int = 13
+    n_stand: int = 2
+    n_phand: int = 2
 
 
 class PitchGPT(nn.Module):
@@ -49,13 +51,16 @@ class PitchGPT(nn.Module):
         super().__init__()
         self.config = config
         d = config.d_model
+        e = d // 4  # per-context-field embedding dim
 
         self.pitch_embed = nn.Embedding(config.n_pitch_types, d)
-        self.balls_embed = nn.Embedding(config.n_balls, d // 4)
-        self.strikes_embed = nn.Embedding(config.n_strikes, d // 4)
-        self.outs_embed = nn.Embedding(config.n_outs, d // 4)
-        self.inning_embed = nn.Embedding(config.n_innings, d // 4)
-        self.ctx_proj = nn.Linear(d, d)
+        self.balls_embed = nn.Embedding(config.n_balls, e)
+        self.strikes_embed = nn.Embedding(config.n_strikes, e)
+        self.outs_embed = nn.Embedding(config.n_outs, e)
+        self.inning_embed = nn.Embedding(config.n_innings, e)
+        self.stand_embed = nn.Embedding(config.n_stand, e)
+        self.phand_embed = nn.Embedding(config.n_phand, e)
+        self.ctx_proj = nn.Linear(6 * e, d)
         self.pos_embed = nn.Embedding(config.seq_len, d)
 
         encoder_layer = nn.TransformerEncoderLayer(
@@ -80,12 +85,16 @@ class PitchGPT(nn.Module):
         strikes = context[:, :, 1].clamp(0, 2)
         outs = context[:, :, 2].clamp(0, 2)
         innings = context[:, :, 3].clamp(1, 12)
+        stand = context[:, :, 4].clamp(0, 1)
+        phand = context[:, :, 5].clamp(0, 1)
 
         ctx = torch.cat([
             self.balls_embed(balls),
             self.strikes_embed(strikes),
             self.outs_embed(outs),
             self.inning_embed(innings),
+            self.stand_embed(stand),
+            self.phand_embed(phand),
         ], dim=-1)
         x = x + self.ctx_proj(ctx)
 
@@ -116,7 +125,9 @@ def make_predict_fn(model, config, device):
             strikes = int(row.get("strikes", 0))
             outs = int(row.get("outs_when_up", 0))
             inning = min(int(row.get("inning", 1)), 12)
-            ctx_data.append([balls, strikes, outs, inning])
+            stand = 0 if str(row.get("stand", "R")) == "L" else 1
+            phand = 0 if str(row.get("p_throws", "R")) == "L" else 1
+            ctx_data.append([balls, strikes, outs, inning, stand, phand])
 
             if i == 0:
                 continue

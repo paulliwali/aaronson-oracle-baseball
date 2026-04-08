@@ -71,6 +71,17 @@ function ModelComparison({ predictions, theme = 'backyard' }) {
   const descriptionsRef = useRef(null)
   const palette = THEME_PALETTES[theme] || THEME_PALETTES.backyard
 
+  // Lift over the naive (always-fast) baseline. Surfaces where models actually
+  // add value (junk-ballers) vs where naive is unbeatable (fastball-heavy).
+  const naiveModel = models.find(m => m.model_name === 'Naive (Always Fast)')
+  const naiveAccuracy = naiveModel ? naiveModel.accuracy : null
+  const liftFor = (model) => (naiveAccuracy == null || model.model_name === 'Naive (Always Fast)') ? null : model.accuracy - naiveAccuracy
+  const formatLift = (lift) => {
+    if (lift == null) return null
+    const pct = (lift * 100).toFixed(1)
+    return lift >= 0 ? `+${pct}%` : `${pct}%`
+  }
+
   const scrollToModel = (modelName) => {
     const el = document.getElementById(`model-desc-${modelName.replace(/[^a-zA-Z0-9]/g, '-')}`)
     if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' })
@@ -145,6 +156,24 @@ function ModelComparison({ predictions, theme = 'backyard' }) {
           ))}
         </div>
       </div>
+
+      {naiveAccuracy != null && (() => {
+        const others = models.filter(m => m.model_name !== 'Naive (Always Fast)')
+        if (others.length === 0) return null
+        const best = others.reduce((a, b) => (a.accuracy >= b.accuracy ? a : b))
+        const lift = best.accuracy - naiveAccuracy
+        const verdict = lift > 0.02
+          ? `${best.model_name} beats the always-fast baseline by ${formatLift(lift)} on this game.`
+          : lift < -0.02
+            ? `On this game, no model beats the always-fast baseline (${formatLift(lift)}). Likely a fastball-heavy outing.`
+            : `Models are roughly tied with the always-fast baseline (${formatLift(lift)}). Naive is hard to beat here.`
+        return (
+          <div className={`lift-banner ${lift > 0.02 ? 'positive' : lift < -0.02 ? 'negative' : 'neutral'}`}>
+            <span className="lift-banner-label">Lift over Naive</span>
+            <span className="lift-banner-value">{verdict}</span>
+          </div>
+        )
+      })()}
 
       <div className="pitch-predictions-chart">
         <h3>Pitch Predictions vs Actual</h3>
@@ -320,7 +349,14 @@ function ModelComparison({ predictions, theme = 'backyard' }) {
               >
                 <div className="model-card-header">
                   <h4 style={{ color: palette.models[index % palette.models.length] }}>{info.title}</h4>
-                  <span className="model-card-accuracy">{(model.accuracy * 100).toFixed(1)}%</span>
+                  <div className="model-card-metrics">
+                    <span className="model-card-accuracy">{(model.accuracy * 100).toFixed(1)}%</span>
+                    {liftFor(model) != null && (
+                      <span className={`model-card-lift ${liftFor(model) >= 0 ? 'positive' : 'negative'}`}>
+                        {formatLift(liftFor(model))} vs naive
+                      </span>
+                    )}
+                  </div>
                 </div>
                 <p className="model-card-description">{info.description}</p>
                 <p className="model-card-details">{info.details}</p>

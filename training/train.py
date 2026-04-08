@@ -37,7 +37,7 @@ class PitchGPTConfig:
     n_layers: int = 6
     n_heads: int = 4
     d_model: int = 128
-    dropout: float = 0.15
+    dropout: float = 0.25
     n_pitch_types: int = NUM_CLASSES
     n_balls: int = 4
     n_strikes: int = 3
@@ -196,13 +196,15 @@ def main():
     n_params = sum(p.numel() for p in model.parameters())
     print(f"Model params: {n_params:,}")
 
-    optimizer = torch.optim.AdamW(model.parameters(), lr=3e-4, weight_decay=0.001)
+    optimizer = torch.optim.AdamW(model.parameters(), lr=3e-4, weight_decay=0.05)
     scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=TIME_BUDGET)
 
     # Training loop
     batch_size = 32
     n_train = len(train_ctx_t)
     best_val_loss = float("inf")
+    epochs_without_improvement = 0
+    early_stop_patience = 5
     step = 0
 
     print(f"\nTraining for {TIME_BUDGET}s...")
@@ -231,6 +233,7 @@ def main():
             loss = F.cross_entropy(
                 logits[mask],
                 target[mask],
+                label_smoothing=0.1,
             )
 
             optimizer.zero_grad()
@@ -257,6 +260,12 @@ def main():
         if val_loss < best_val_loss:
             best_val_loss = val_loss
             best_state = {k: v.cpu().clone() for k, v in model.state_dict().items()}
+            epochs_without_improvement = 0
+        else:
+            epochs_without_improvement += 1
+            if epochs_without_improvement >= early_stop_patience:
+                print(f"  Early stop: no val improvement for {early_stop_patience} epochs")
+                break
 
     total_training_time = time.time() - t_start
 

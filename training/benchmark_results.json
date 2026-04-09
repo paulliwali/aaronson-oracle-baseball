@@ -79,27 +79,27 @@
       "n_pitches": 24917
     },
     "Frequency-Based (Oracle)": {
-      "accuracy": 0.4822,
+      "accuracy": 0.4828,
       "per_class": {
-        "fast": 0.6019,
-        "breaking": 0.3729,
-        "off-speed": 0.1915
+        "fast": 0.6053,
+        "breaking": 0.3665,
+        "off-speed": 0.1995
       },
       "confusion": {
         "fast": {
-          "fast": 8464,
-          "breaking": 4235,
-          "off-speed": 1362
+          "fast": 8511,
+          "breaking": 4244,
+          "off-speed": 1306
         },
         "breaking": {
-          "fast": 4190,
-          "breaking": 3024,
-          "off-speed": 895
+          "fast": 4251,
+          "breaking": 2972,
+          "off-speed": 886
         },
         "off-speed": {
-          "fast": 1359,
-          "breaking": 862,
-          "off-speed": 526
+          "fast": 1350,
+          "breaking": 849,
+          "off-speed": 548
         }
       },
       "n_pitches": 24917
@@ -131,27 +131,27 @@
       "n_pitches": 24917
     },
     "Transformer": {
-      "accuracy": 0.6109,
+      "accuracy": 0.5976,
       "per_class": {
-        "fast": 0.9285,
-        "breaking": 0.2421,
-        "off-speed": 0.0743
+        "fast": 0.9755,
+        "breaking": 0.1121,
+        "off-speed": 0.0968
       },
       "confusion": {
         "fast": {
-          "fast": 13056,
-          "breaking": 764,
-          "off-speed": 241
+          "fast": 13716,
+          "breaking": 137,
+          "off-speed": 208
         },
         "breaking": {
-          "fast": 6022,
-          "breaking": 1963,
-          "off-speed": 124
+          "fast": 7073,
+          "breaking": 909,
+          "off-speed": 127
         },
         "off-speed": {
-          "fast": 2259,
-          "breaking": 284,
-          "off-speed": 204
+          "fast": 2431,
+          "breaking": 50,
+          "off-speed": 266
         }
       },
       "n_pitches": 24917
@@ -165,9 +165,9 @@
         "Naive (Always Fast)": 0.4839,
         "N-Gram (n=3)": 0.4452,
         "N-Gram (n=4)": 0.4452,
-        "Frequency-Based (Oracle)": 0.3949,
+        "Frequency-Based (Oracle)": 0.427,
         "Markov Context": 0.4782,
-        "Transformer": 0.648
+        "Transformer": 0.5944
       }
     },
     "Scherzer, Max": {
@@ -177,7 +177,7 @@
         "Naive (Always Fast)": 0.5139,
         "N-Gram (n=3)": 0.4675,
         "N-Gram (n=4)": 0.4834,
-        "Frequency-Based (Oracle)": 0.3974,
+        "Frequency-Based (Oracle)": 0.4,
         "Markov Context": 0.5007,
         "Transformer": 0.5139
       }
@@ -189,9 +189,9 @@
         "Naive (Always Fast)": 0.4037,
         "N-Gram (n=3)": 0.4755,
         "N-Gram (n=4)": 0.4381,
-        "Frequency-Based (Oracle)": 0.486,
+        "Frequency-Based (Oracle)": 0.4308,
         "Markov Context": 0.4142,
-        "Transformer": 0.6629
+        "Transformer": 0.6296
       }
     },
     "Sale, Chris": {
@@ -201,9 +201,9 @@
         "Naive (Always Fast)": 0.4447,
         "N-Gram (n=3)": 0.4497,
         "N-Gram (n=4)": 0.4385,
-        "Frequency-Based (Oracle)": 0.4137,
+        "Frequency-Based (Oracle)": 0.4161,
         "Markov Context": 0.4311,
-        "Transformer": 0.5776
+        "Transformer": 0.4745
       }
     },
     "Cole, Gerrit": {
@@ -213,7 +213,7 @@
         "Naive (Always Fast)": 0.6001,
         "N-Gram (n=3)": 0.5429,
         "N-Gram (n=4)": 0.5605,
-        "Frequency-Based (Oracle)": 0.5099,
+        "Frequency-Based (Oracle)": 0.5055,
         "Markov Context": 0.5899,
         "Transformer": 0.6001
       }
@@ -225,9 +225,9 @@
         "Naive (Always Fast)": 0.6018,
         "N-Gram (n=3)": 0.5598,
         "N-Gram (n=4)": 0.5655,
-        "Frequency-Based (Oracle)": 0.4584,
+        "Frequency-Based (Oracle)": 0.4839,
         "Markov Context": 0.5985,
-        "Transformer": 0.6282
+        "Transformer": 0.6117
       }
     },
     "Wheeler, Zack": {
@@ -237,7 +237,7 @@
         "Naive (Always Fast)": 0.7587,
         "N-Gram (n=3)": 0.7291,
         "N-Gram (n=4)": 0.7298,
-        "Frequency-Based (Oracle)": 0.6438,
+        "Frequency-Based (Oracle)": 0.6412,
         "Markov Context": 0.7272,
         "Transformer": 0.7587
       }
@@ -249,7 +249,7 @@
         "Naive (Always Fast)": 0.9243,
         "N-Gram (n=3)": 0.9137,
         "N-Gram (n=4)": 0.9102,
-        "Frequency-Based (Oracle)": 0.8485,
+        "Frequency-Based (Oracle)": 0.8583,
         "Markov Context": 0.9088,
         "Transformer": 0.9243
       }
@@ -261,9 +261,9 @@
         "Naive (Always Fast)": 0.5808,
         "N-Gram (n=3)": 0.534,
         "N-Gram (n=4)": 0.531,
-        "Frequency-Based (Oracle)": 0.4702,
+        "Frequency-Based (Oracle)": 0.4848,
         "Markov Context": 0.5705,
-        "Transformer": 0.5808
+        "Transformer": 0.5814
       }
     },
     "Snell, Blake": {
@@ -273,9 +273,9 @@
         "Naive (Always Fast)": 0.456,
         "N-Gram (n=3)": 0.4481,
         "N-Gram (n=4)": 0.4638,
-        "Frequency-Based (Oracle)": 0.3714,
+        "Frequency-Based (Oracle)": 0.3766,
         "Markov Context": 0.4446,
-        "Transformer": 0.5536
+        "Transformer": 0.4778
       }
     },
     "Glasnow, Tyler": {
@@ -285,9 +285,9 @@
         "Naive (Always Fast)": 0.4927,
         "N-Gram (n=3)": 0.5317,
         "N-Gram (n=4)": 0.5203,
-        "Frequency-Based (Oracle)": 0.5252,
+        "Frequency-Based (Oracle)": 0.5057,
         "Markov Context": 0.5089,
-        "Transformer": 0.6959
+        "Transformer": 0.7496
       }
     },
     "Lugo, Seth": {
@@ -297,9 +297,9 @@
         "Naive (Always Fast)": 0.5456,
         "N-Gram (n=3)": 0.484,
         "N-Gram (n=4)": 0.4994,
-        "Frequency-Based (Oracle)": 0.4663,
+        "Frequency-Based (Oracle)": 0.4355,
         "Markov Context": 0.5385,
-        "Transformer": 0.5728
+        "Transformer": 0.5527
       }
     },
     "Houck, Tanner": {
@@ -309,9 +309,9 @@
         "Naive (Always Fast)": 0.6094,
         "N-Gram (n=3)": 0.5637,
         "N-Gram (n=4)": 0.5379,
-        "Frequency-Based (Oracle)": 0.5308,
+        "Frequency-Based (Oracle)": 0.515,
         "Markov Context": 0.6066,
-        "Transformer": 0.6137
+        "Transformer": 0.6109
       }
     },
     "Webb, Logan": {
@@ -321,9 +321,9 @@
         "Naive (Always Fast)": 0.526,
         "N-Gram (n=3)": 0.4837,
         "N-Gram (n=4)": 0.5059,
-        "Frequency-Based (Oracle)": 0.42,
+        "Frequency-Based (Oracle)": 0.3978,
         "Markov Context": 0.5107,
-        "Transformer": 0.5696
+        "Transformer": 0.5835
       }
     },
     "Ohtani, Shohei": {
@@ -333,9 +333,9 @@
         "Naive (Always Fast)": 0.61,
         "N-Gram (n=3)": 0.5753,
         "N-Gram (n=4)": 0.5663,
-        "Frequency-Based (Oracle)": 0.5483,
+        "Frequency-Based (Oracle)": 0.5109,
         "Markov Context": 0.5959,
-        "Transformer": 0.7632
+        "Transformer": 0.7053
       }
     },
     "McClanahan, Shane": {
@@ -345,9 +345,9 @@
         "Naive (Always Fast)": 0.4016,
         "N-Gram (n=3)": 0.369,
         "N-Gram (n=4)": 0.3938,
-        "Frequency-Based (Oracle)": 0.3566,
+        "Frequency-Based (Oracle)": 0.3705,
         "Markov Context": 0.3938,
-        "Transformer": 0.3287
+        "Transformer": 0.4078
       }
     },
     "Valdez, Framber": {
@@ -357,9 +357,9 @@
         "Naive (Always Fast)": 0.3996,
         "N-Gram (n=3)": 0.4278,
         "N-Gram (n=4)": 0.4221,
-        "Frequency-Based (Oracle)": 0.3749,
+        "Frequency-Based (Oracle)": 0.3834,
         "Markov Context": 0.4073,
-        "Transformer": 0.5187
+        "Transformer": 0.4616
       }
     },
     "Ragans, Cole": {
@@ -369,9 +369,9 @@
         "Naive (Always Fast)": 0.5417,
         "N-Gram (n=3)": 0.4833,
         "N-Gram (n=4)": 0.5024,
-        "Frequency-Based (Oracle)": 0.3786,
+        "Frequency-Based (Oracle)": 0.4,
         "Markov Context": 0.5274,
-        "Transformer": 0.5429
+        "Transformer": 0.5417
       }
     },
     "Gallen, Zac": {
@@ -381,9 +381,9 @@
         "Naive (Always Fast)": 0.4773,
         "N-Gram (n=3)": 0.4469,
         "N-Gram (n=4)": 0.4621,
-        "Frequency-Based (Oracle)": 0.3955,
+        "Frequency-Based (Oracle)": 0.3982,
         "Markov Context": 0.474,
-        "Transformer": 0.4806
+        "Transformer": 0.4773
       }
     },
     "Burnes, Corbin": {
@@ -393,7 +393,7 @@
         "Naive (Always Fast)": 0.536,
         "N-Gram (n=3)": 0.4798,
         "N-Gram (n=4)": 0.4914,
-        "Frequency-Based (Oracle)": 0.4171,
+        "Frequency-Based (Oracle)": 0.428,
         "Markov Context": 0.5252,
         "Transformer": 0.536
       }
@@ -405,9 +405,9 @@
         "Naive (Always Fast)": 0.5577,
         "N-Gram (n=3)": 0.4696,
         "N-Gram (n=4)": 0.5111,
-        "Frequency-Based (Oracle)": 0.4018,
+        "Frequency-Based (Oracle)": 0.4281,
         "Markov Context": 0.5516,
-        "Transformer": 0.5526
+        "Transformer": 0.5597
       }
     },
     "Strider, Spencer": {
@@ -417,9 +417,9 @@
         "Naive (Always Fast)": 0.5803,
         "N-Gram (n=3)": 0.5304,
         "N-Gram (n=4)": 0.517,
-        "Frequency-Based (Oracle)": 0.4623,
+        "Frequency-Based (Oracle)": 0.4708,
         "Markov Context": 0.5693,
-        "Transformer": 0.5888
+        "Transformer": 0.5815
       }
     },
     "Miller, Bryce": {
@@ -429,7 +429,7 @@
         "Naive (Always Fast)": 0.7368,
         "N-Gram (n=3)": 0.6731,
         "N-Gram (n=4)": 0.6611,
-        "Frequency-Based (Oracle)": 0.6322,
+        "Frequency-Based (Oracle)": 0.6166,
         "Markov Context": 0.7151,
         "Transformer": 0.7368
       }

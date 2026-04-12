@@ -1,30 +1,460 @@
 {
     "pitchers": [
-        {"name": "Gerrit Cole", "first": "Gerrit", "last": "Cole"},
-        {"name": "Spencer Strider", "first": "Spencer", "last": "Strider"},
-        {"name": "Logan Webb", "first": "Logan", "last": "Webb"},
-        {"name": "Zack Wheeler", "first": "Zack", "last": "Wheeler"},
-        {"name": "Corbin Burnes", "first": "Corbin", "last": "Burnes"},
-        {"name": "Framber Valdez", "first": "Framber", "last": "Valdez"},
-        {"name": "Blake Snell", "first": "Blake", "last": "Snell"},
-        {"name": "Kevin Gausman", "first": "Kevin", "last": "Gausman"},
-        {"name": "Shohei Ohtani", "first": "Shohei", "last": "Ohtani"},
-        {"name": "Max Scherzer", "first": "Max", "last": "Scherzer"},
-        {"name": "Justin Verlander", "first": "Justin", "last": "Verlander"},
-        {"name": "Aaron Nola", "first": "Aaron", "last": "Nola"},
-        {"name": "Sonny Gray", "first": "Sonny", "last": "Gray"},
-        {"name": "Luis Castillo", "first": "Luis", "last": "Castillo"},
-        {"name": "Shane McClanahan", "first": "Shane", "last": "McClanahan"},
-        {"name": "Pablo Lopez", "first": "Pablo", "last": "Lopez"},
-        {"name": "Yu Darvish", "first": "Yu", "last": "Darvish"},
-        {"name": "Zac Gallen", "first": "Zac", "last": "Gallen"},
-        {"name": "Tyler Glasnow", "first": "Tyler", "last": "Glasnow"},
-        {"name": "Bryce Miller", "first": "Bryce", "last": "Miller"},
-        {"name": "Tanner Houck", "first": "Tanner", "last": "Houck"},
-        {"name": "Tarik Skubal", "first": "Tarik", "last": "Skubal"},
-        {"name": "Chris Sale", "first": "Chris", "last": "Sale"},
-        {"name": "Seth Lugo", "first": "Seth", "last": "Lugo"},
-        {"name": "Cole Ragans", "first": "Cole", "last": "Ragans"}
+        {
+            "name": "Cole Ragans",
+            "first": "Cole",
+            "last": "Ragans",
+            "mlbam_id": 666142
+        },
+        {
+            "name": "Kevin Gausman",
+            "first": "Kevin",
+            "last": "Gausman",
+            "mlbam_id": 592332
+        },
+        {
+            "name": "Jake Irvin",
+            "first": "Jake",
+            "last": "Irvin",
+            "mlbam_id": 663623
+        },
+        {
+            "name": "Tyler Anderson",
+            "first": "Tyler",
+            "last": "Anderson",
+            "mlbam_id": 542881
+        },
+        {
+            "name": "Seth Lugo",
+            "first": "Seth",
+            "last": "Lugo",
+            "mlbam_id": 607625
+        },
+        {
+            "name": "Logan Webb",
+            "first": "Logan",
+            "last": "Webb",
+            "mlbam_id": 657277
+        },
+        {
+            "name": "Zack Wheeler",
+            "first": "Zack",
+            "last": "Wheeler",
+            "mlbam_id": 554430
+        },
+        {
+            "name": "Yusei Kikuchi",
+            "first": "Yusei",
+            "last": "Kikuchi",
+            "mlbam_id": 579328
+        },
+        {
+            "name": "Sonny Gray",
+            "first": "Sonny",
+            "last": "Gray",
+            "mlbam_id": 543243
+        },
+        {
+            "name": "Freddy Peralta",
+            "first": "Freddy",
+            "last": "Peralta",
+            "mlbam_id": 642547
+        },
+        {
+            "name": "Chris Bassitt",
+            "first": "Chris",
+            "last": "Bassitt",
+            "mlbam_id": 605135
+        },
+        {
+            "name": "Luis Castillo",
+            "first": "Luis",
+            "last": "Castillo",
+            "mlbam_id": 622491
+        },
+        {
+            "name": "Charlie Morton",
+            "first": "Charlie",
+            "last": "Morton",
+            "mlbam_id": 450203
+        },
+        {
+            "name": "Michael King",
+            "first": "Michael",
+            "last": "King",
+            "mlbam_id": 650633
+        },
+        {
+            "name": "Framber Valdez",
+            "first": "Framber",
+            "last": "Valdez",
+            "mlbam_id": 664285
+        },
+        {
+            "name": "Max Fried",
+            "first": "Max",
+            "last": "Fried",
+            "mlbam_id": 608331
+        },
+        {
+            "name": "Erick Fedde",
+            "first": "Erick",
+            "last": "Fedde",
+            "mlbam_id": 607200
+        },
+        {
+            "name": "Tanner Houck",
+            "first": "Tanner",
+            "last": "Houck",
+            "mlbam_id": 656557
+        },
+        {
+            "name": "Carlos Rod\u00f3n",
+            "first": "Carlos",
+            "last": "Rod\u00f3n",
+            "mlbam_id": 607074
+        },
+        {
+            "name": "Taj Bradley",
+            "first": "Taj",
+            "last": "Bradley",
+            "mlbam_id": 671737
+        },
+        {
+            "name": "Jos\u00e9 Berr\u00edos",
+            "first": "Jos\u00e9",
+            "last": "Berr\u00edos",
+            "mlbam_id": 621244
+        },
+        {
+            "name": "Griffin Canning",
+            "first": "Griffin",
+            "last": "Canning",
+            "mlbam_id": 656288
+        },
+        {
+            "name": "Jose Quintana",
+            "first": "Jose",
+            "last": "Quintana",
+            "mlbam_id": 500779
+        },
+        {
+            "name": "Justin Steele",
+            "first": "Justin",
+            "last": "Steele",
+            "mlbam_id": 657006
+        },
+        {
+            "name": "Tarik Skubal",
+            "first": "Tarik",
+            "last": "Skubal",
+            "mlbam_id": 669373
+        },
+        {
+            "name": "Shota Imanaga",
+            "first": "Shota",
+            "last": "Imanaga",
+            "mlbam_id": 684007
+        },
+        {
+            "name": "Brandon Pfaadt",
+            "first": "Brandon",
+            "last": "Pfaadt",
+            "mlbam_id": 694297
+        },
+        {
+            "name": "Frankie Montas",
+            "first": "Frankie",
+            "last": "Montas",
+            "mlbam_id": 593423
+        },
+        {
+            "name": "Chris Sale",
+            "first": "Chris",
+            "last": "Sale",
+            "mlbam_id": 519242
+        },
+        {
+            "name": "Hunter Brown",
+            "first": "Hunter",
+            "last": "Brown",
+            "mlbam_id": 686613
+        },
+        {
+            "name": "Aaron Nola",
+            "first": "Aaron",
+            "last": "Nola",
+            "mlbam_id": 605400
+        },
+        {
+            "name": "Gavin Stone",
+            "first": "Gavin",
+            "last": "Stone",
+            "mlbam_id": 694813
+        },
+        {
+            "name": "MacKenzie Gore",
+            "first": "MacKenzie",
+            "last": "Gore",
+            "mlbam_id": 669022
+        },
+        {
+            "name": "Nestor Cortes",
+            "first": "Nestor",
+            "last": "Cortes",
+            "mlbam_id": 641482
+        },
+        {
+            "name": "Austin Gomber",
+            "first": "Austin",
+            "last": "Gomber",
+            "mlbam_id": 596295
+        },
+        {
+            "name": "Logan Gilbert",
+            "first": "Logan",
+            "last": "Gilbert",
+            "mlbam_id": 669302
+        },
+        {
+            "name": "Andrew Heaney",
+            "first": "Andrew",
+            "last": "Heaney",
+            "mlbam_id": 571760
+        },
+        {
+            "name": "Luis Severino",
+            "first": "Luis",
+            "last": "Severino",
+            "mlbam_id": 622663
+        },
+        {
+            "name": "Mitchell Parker",
+            "first": "Mitchell",
+            "last": "Parker",
+            "mlbam_id": 680730
+        },
+        {
+            "name": "Bryce Miller",
+            "first": "Bryce",
+            "last": "Miller",
+            "mlbam_id": 682243
+        },
+        {
+            "name": "Paul Skenes",
+            "first": "Paul",
+            "last": "Skenes",
+            "mlbam_id": 694973
+        },
+        {
+            "name": "Brady Singer",
+            "first": "Brady",
+            "last": "Singer",
+            "mlbam_id": 663903
+        },
+        {
+            "name": "Albert Su\u00e1rez",
+            "first": "Albert",
+            "last": "Su\u00e1rez",
+            "mlbam_id": 544150
+        },
+        {
+            "name": "Ben Lively",
+            "first": "Ben",
+            "last": "Lively",
+            "mlbam_id": 594902
+        },
+        {
+            "name": "Corbin Burnes",
+            "first": "Corbin",
+            "last": "Burnes",
+            "mlbam_id": 669203
+        },
+        {
+            "name": "Hunter Greene",
+            "first": "Hunter",
+            "last": "Greene",
+            "mlbam_id": 668881
+        },
+        {
+            "name": "Sean Manaea",
+            "first": "Sean",
+            "last": "Manaea",
+            "mlbam_id": 640455
+        },
+        {
+            "name": "Patrick Corbin",
+            "first": "Patrick",
+            "last": "Corbin",
+            "mlbam_id": 571578
+        },
+        {
+            "name": "Pablo L\u00f3pez",
+            "first": "Pablo",
+            "last": "L\u00f3pez",
+            "mlbam_id": 641154
+        },
+        {
+            "name": "Matt Waldron",
+            "first": "Matt",
+            "last": "Waldron",
+            "mlbam_id": 663362
+        },
+        {
+            "name": "Joey Estes",
+            "first": "Joey",
+            "last": "Estes",
+            "mlbam_id": 683155
+        },
+        {
+            "name": "Cal Quantrill",
+            "first": "Cal",
+            "last": "Quantrill",
+            "mlbam_id": 615698
+        },
+        {
+            "name": "Mitch Keller",
+            "first": "Mitch",
+            "last": "Keller",
+            "mlbam_id": 656605
+        },
+        {
+            "name": "Nathan Eovaldi",
+            "first": "Nathan",
+            "last": "Eovaldi",
+            "mlbam_id": 543135
+        },
+        {
+            "name": "Spencer Schwellenbach",
+            "first": "Spencer",
+            "last": "Schwellenbach",
+            "mlbam_id": 680885
+        },
+        {
+            "name": "Dylan Cease",
+            "first": "Dylan",
+            "last": "Cease",
+            "mlbam_id": 656302
+        },
+        {
+            "name": "Michael Lorenzen",
+            "first": "Michael",
+            "last": "Lorenzen",
+            "mlbam_id": 547179
+        },
+        {
+            "name": "Kyle Gibson",
+            "first": "Kyle",
+            "last": "Gibson",
+            "mlbam_id": 502043
+        },
+        {
+            "name": "David Peterson",
+            "first": "David",
+            "last": "Peterson",
+            "mlbam_id": 656849
+        },
+        {
+            "name": "Cristopher S\u00e1nchez",
+            "first": "Cristopher",
+            "last": "S\u00e1nchez",
+            "mlbam_id": 650911
+        },
+        {
+            "name": "George Kirby",
+            "first": "George",
+            "last": "Kirby",
+            "mlbam_id": 669923
+        },
+        {
+            "name": "Ronel Blanco",
+            "first": "Ronel",
+            "last": "Blanco",
+            "mlbam_id": 669854
+        },
+        {
+            "name": "Mitch Spence",
+            "first": "Mitch",
+            "last": "Spence",
+            "mlbam_id": 687765
+        },
+        {
+            "name": "Jameson Taillon",
+            "first": "Jameson",
+            "last": "Taillon",
+            "mlbam_id": 592791
+        },
+        {
+            "name": "DJ Herz",
+            "first": "DJ",
+            "last": "Herz",
+            "mlbam_id": 687792
+        },
+        {
+            "name": "Nick Pivetta",
+            "first": "Nick",
+            "last": "Pivetta",
+            "mlbam_id": 601713
+        },
+        {
+            "name": "Javier Assad",
+            "first": "Javier",
+            "last": "Assad",
+            "mlbam_id": 665871
+        },
+        {
+            "name": "Ryne Nelson",
+            "first": "Ryne",
+            "last": "Nelson",
+            "mlbam_id": 669194
+        },
+        {
+            "name": "Marcus Stroman",
+            "first": "Marcus",
+            "last": "Stroman",
+            "mlbam_id": 573186
+        },
+        {
+            "name": "Brayan Bello",
+            "first": "Brayan",
+            "last": "Bello",
+            "mlbam_id": 678394
+        },
+        {
+            "name": "Colin Rea",
+            "first": "Colin",
+            "last": "Rea",
+            "mlbam_id": 607067
+        },
+        {
+            "name": "JP Sears",
+            "first": "JP",
+            "last": "Sears",
+            "mlbam_id": 676664
+        },
+        {
+            "name": "Aaron Civale",
+            "first": "Aaron",
+            "last": "Civale",
+            "mlbam_id": 650644
+        },
+        {
+            "name": "Luis Ortiz",
+            "first": "Luis",
+            "last": "Ortiz",
+            "mlbam_id": 682847
+        },
+        {
+            "name": "Simeon Woods Richardson",
+            "first": "Simeon",
+            "last": "Woods Richardson",
+            "mlbam_id": 680573
+        }
     ],
-    "seasons": [2022, 2023, 2024, 2025]
+    "seasons": [
+        2022,
+        2023,
+        2024,
+        2025
+    ]
 }

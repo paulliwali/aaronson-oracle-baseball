@@ -1,8 +1,7 @@
 """
-Fixed data preparation and evaluation for pitch prediction experiments.
+Shared data preparation and evaluation harness for pitch prediction models.
 Loads training data, creates splits, provides dataloaders and evaluation.
 
-DO NOT MODIFY — this is the fixed evaluation harness.
 Usage: uv run python training/prepare.py  (to verify data is ready)
 """
 
@@ -21,10 +20,9 @@ PITCH_CLASSES = ["fast", "breaking", "off-speed"]
 PITCH_TO_IDX = {p: i for i, p in enumerate(PITCH_CLASSES)}
 NUM_CLASSES = len(PITCH_CLASSES)
 SEED = 42
-TIME_BUDGET = 300  # training time budget in seconds (5 minutes)
 
 DATA_DIR = Path(__file__).parent.parent / "data" / "training"
-MODELS_DIR = Path(__file__).parent.parent / "models"
+MODELS_DIR = Path(__file__).parent.parent / "model_artifacts"
 
 # Feature engineering constants
 HISTORY_LEN = 5
@@ -237,7 +235,7 @@ def extract_sequences(df: pd.DataFrame, seq_len: int = 256, pitcher_vocab: dict 
 
 
 # ---------------------------------------------------------------------------
-# Evaluation (DO NOT CHANGE — this is the fixed metric)
+# Evaluation
 # ---------------------------------------------------------------------------
 
 def evaluate(predict_fn: Callable[[pd.DataFrame], List[str]], split: str = "test") -> dict:
@@ -316,6 +314,5 @@ if __name__ == "__main__":
 
     print()
     print(f"Feature vector size: {NUM_FEATURES}")
-    print(f"Time budget: {TIME_BUDGET}s")
     print()
-    print("Data is ready. Run: uv run python training/train.py")
+    print("Data is ready. Run: uv run python training/train.py <model>")

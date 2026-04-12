@@ -5,7 +5,10 @@ from pathlib import Path
 
 from fastapi import APIRouter, HTTPException, Request
 
+from sqlalchemy import distinct
+
 from app.database import get_db
+from app.models.database import PitcherGameCache, StatcastPitch
 from app.models.schemas import PlayerRequest, PlayerStatsResponse
 from app.services.baseball import get_player_id, fetch_and_cache_player_stats, get_pitcher_games_from_db
 
@@ -60,21 +63,33 @@ async def get_player_stats(player_request: PlayerRequest, request: Request):
 
 @router.get("/players/list")
 async def get_players_list():
-    """Get list of pitchers from pitchers.json"""
+    """Get list of pitchers that have games in the default season."""
+    try:
+        with get_db() as db:
+            rows = db.query(
+                StatcastPitch.player_name
+            ).filter(
+                StatcastPitch.game_date >= f"{DEFAULT_SEASON}-01-01",
+                StatcastPitch.game_date < f"{DEFAULT_SEASON + 1}-01-01",
+            ).distinct().all()
+
+            if rows:
+                # DB names are "Last, First" — convert to "First Last"
+                names = []
+                for (name,) in rows:
+                    parts = name.split(", ", 1)
+                    if len(parts) == 2:
+                        names.append(f"{parts[1]} {parts[0]}")
+                    else:
+                        names.append(name)
+                return {"players": sorted(names)}
+    except Exception:
+        pass
+
+    # Fallback to pitchers.json if DB is unavailable
     try:
         with open(PITCHERS_JSON) as f:
             data = json.load(f)
         return {"players": [p["name"] for p in data["pitchers"]]}
     except FileNotFoundError:
-        # Fallback to hardcoded list if file not found
-        return {
-            "players": [
-                "Logan Webb",
-                "Corbin Burnes",
-                "Zac Gallen",
-                "Gerrit Cole",
-                "Blake Snell",
-                "Zack Wheeler",
-                "Kodai Senga",
-            ]
-        }
+        return {"players": []}

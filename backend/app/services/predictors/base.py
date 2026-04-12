@@ -10,7 +10,7 @@ DEFAULT_PITCH_VALUE = "fast"
 PITCH_GRAM_SIZE = 3
 PITCH_CLASSES = ["fast", "breaking", "off-speed"]
 PITCH_TO_IDX = {p: i for i, p in enumerate(PITCH_CLASSES)}
-MODELS_DIR = Path(__file__).parent.parent.parent.parent.parent / "models"
+MODELS_DIR = Path(__file__).parent.parent.parent.parent.parent / "model_artifacts"
 
 
 class BasePredictorModel:

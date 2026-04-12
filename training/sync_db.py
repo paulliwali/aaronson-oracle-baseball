@@ -149,7 +149,7 @@ def save_game_to_postgres(db, game_df: pd.DataFrame, player_id: int, game_date: 
 def sync_pitcher_season(db, pitcher: dict, season: int, pitch_map: dict) -> dict:
     """Sync one pitcher-season into Postgres. Returns stats dict."""
     try:
-        player_id = get_player_id(pitcher["first"], pitcher["last"])
+        player_id = pitcher.get("mlbam_id") or get_player_id(pitcher["first"], pitcher["last"])
     except ValueError as e:
         return {"status": "error", "error": str(e)}
 

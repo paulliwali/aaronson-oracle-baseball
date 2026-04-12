@@ -202,7 +202,7 @@ def _save_to_postgres(db: Session, game_stats_df: pd.DataFrame, player_id: int, 
 
 
 def fetch_and_cache_player_stats(
-    redis_client: redis.Redis,
+    redis_client: Optional[redis.Redis],
     player_id: int,
     start_dt: str,
     end_dt: str,
@@ -211,9 +211,10 @@ def fetch_and_cache_player_stats(
     cache_key = f"season:{player_id}:{start_dt}:{end_dt}"
 
     # Check Redis first
-    cache_data = redis_client.get(cache_key)
-    if cache_data:
-        return pd.read_json(StringIO(cache_data))
+    if redis_client:
+        cache_data = redis_client.get(cache_key)
+        if cache_data:
+            return pd.read_json(StringIO(cache_data))
 
     # Fetch from API
     selected_player_df = statcast_pitcher(
@@ -223,7 +224,8 @@ def fetch_and_cache_player_stats(
     )
 
     # Cache in Redis (shorter TTL for season data)
-    redis_client.set(cache_key, selected_player_df.to_json(orient="records"), ex=86400)
+    if redis_client:
+        redis_client.set(cache_key, selected_player_df.to_json(orient="records"), ex=86400)
     return selected_player_df
 
 

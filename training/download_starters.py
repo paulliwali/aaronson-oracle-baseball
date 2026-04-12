@@ -45,7 +45,7 @@ def download_pitcher_season(pitcher: dict, season: int, pitch_map: dict):
         return out_path
 
     try:
-        player_id = get_player_id(pitcher["first"], pitcher["last"])
+        player_id = pitcher.get("mlbam_id") or get_player_id(pitcher["first"], pitcher["last"])
     except ValueError as e:
         print(f"  ERROR: {e}")
         return None

@@ -16,11 +16,9 @@ venv/
 .vscode/
 *.swp
 
-# Training data and model weights
+# Training data and model artifacts
 data/training/
-models/*
-!models/*.pt
-!models/*.joblib
+model_artifacts/
 training/configs/
 
 # Node

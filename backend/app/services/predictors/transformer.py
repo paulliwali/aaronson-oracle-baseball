@@ -34,7 +34,7 @@ class TransformerPredictor(BasePredictorModel):
         training_dir = str(Path(__file__).parent.parent.parent.parent.parent / "training")
         if training_dir not in sys.path:
             sys.path.insert(0, training_dir)
-        from train import PitchGPT, PitchGPTConfig
+        from models.transformer import PitchGPT, PitchGPTConfig
 
         if torch.cuda.is_available():
             self._device = torch.device("cuda")

@@ -20,6 +20,8 @@ venv/
 data/training/
 model_artifacts/
 training/configs/
+training/*.log
+training/test_logits_cache.npz
 
 # Node
 node_modules/

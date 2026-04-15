@@ -115,8 +115,7 @@ predictors/
 ├── __init__.py       # Registry (AVAILABLE_MODELS) — add new models here
 ├── base.py           # BasePredictorModel + shared constants
 ├── naive.py          # NaivePredictor — always predicts "fast"
-├── ngram.py          # NGramPredictor — Aaronson Oracle (n=3, n=4)
-├── frequency.py      # FrequencyPredictor — samples from oracle distribution
+├── ngram.py          # NGramPredictor — Aaronson Oracle (n=3)
 ├── markov.py         # MarkovContextPredictor — n-gram + count/outs context
 ├── tree.py           # TreePredictor — Random Forest (requires models/random_forest.joblib)
 └── transformer.py    # TransformerPredictor — PitchGPT (requires models/pitch_transformer.pt)

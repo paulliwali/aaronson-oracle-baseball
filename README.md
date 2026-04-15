@@ -13,7 +13,7 @@ The application uses n-gram pattern matching and other algorithms to predict a s
 ### Key Features
 
 - 📊 **Interactive Visualizations**: Scatter plots showing actual vs predicted pitches, aligned with rolling accuracy charts
-- 🎯 **Multiple Prediction Models**: Compare naive baseline, n-gram (n=3,4), and frequency-based predictors
+- 🎯 **Multiple Prediction Models**: Compare naive baseline, n-gram (n=3), Markov-context, Random Forest, and PitchGPT transformer predictors
 - ⚡ **Real-time Analysis**: Analyze any MLB pitcher's game from the 2023 season
 - ⚾ **Team Matchup Info**: See home/away teams and which team the pitcher plays for
 - 🎮 **Backyard Baseball Theme**: Fun, vibrant UI inspired by the classic video game with bold colors and playful design

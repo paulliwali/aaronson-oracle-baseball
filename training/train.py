@@ -14,7 +14,6 @@ MODELS = {
     "tree": "models.tree",
     "naive": "models.naive",
     "ngram": "models.ngram",
-    "frequency": "models.frequency",
     "markov": "models.markov",
 }
 

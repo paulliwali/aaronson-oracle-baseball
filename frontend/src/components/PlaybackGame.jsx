@@ -9,7 +9,7 @@ const API_BASE_URL = import.meta.env.MODE === 'production'
 
 const PITCH_COLORS = { fast: '#FF5252', breaking: '#2196F3', 'off-speed': '#4CAF50' }
 
-const MODEL_PRIORITY = ['Transformer', 'Random Forest', 'Markov Context', 'N-Gram (n=4)']
+const MODEL_PRIORITY = ['Transformer', 'Random Forest', 'Markov Context', 'N-Gram (n=3)']
 
 function pickBestModel(modelPredictions) {
   if (!modelPredictions) return { name: 'Model', pred: 'fast' }

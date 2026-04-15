@@ -49,16 +49,6 @@ const MODEL_DESCRIPTIONS = {
     description: 'An adaptation of Aaronson\'s Oracle for pitch prediction. Tracks the last 3 pitch types as a "context" and predicts whatever pitch type most frequently followed that context within the current game. Builds its lookup table on-the-fly.',
     details: 'Online learning — adapts to each pitcher\'s tendencies during the game.',
   },
-  'N-Gram (n=4)': {
-    title: 'N-Gram (n=4)',
-    description: 'Same as N-Gram (n=3) but uses 4-pitch context windows. Longer context captures more specific patterns but needs more data to build reliable statistics.',
-    details: 'Online learning — adapts to each pitcher\'s tendencies during the game.',
-  },
-  'Frequency-Based (Oracle)': {
-    title: 'Frequency-Based (Oracle)',
-    description: 'Samples from the observed pitch distribution within the current game rather than picking the most likely pitch. More balanced across classes but lower overall accuracy since it doesn\'t always pick the most probable option.',
-    details: 'Online learning — tracks running pitch frequencies.',
-  },
   'Markov Context': {
     title: 'Markov Context',
     description: 'Extends the n-gram approach by conditioning on game state (count and outs) in addition to recent pitch history. Tracks pitch patterns within specific game situations — e.g., what a pitcher tends to throw in a 3-2 count with 2 outs.',

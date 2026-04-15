@@ -29,10 +29,17 @@ All models predict simplified pitch types: **fast**, **breaking**, **off-speed**
 |-------|---------|------|----------|-----------|-----------|
 | Naive (Always Fast) | 0.5857 | 1.0000 | 0.0000 | 0.0000 | 103,039 |
 | N-Gram (n=3) | 0.5426 | 0.7842 | 0.2344 | 0.1078 | 103,039 |
-| N-Gram (n=4) | 0.5484 | 0.8198 | 0.1927 | 0.0860 | 103,039 |
-| Frequency-Based (Oracle) | 0.4912 | 0.6146 | 0.3535 | 0.2139 | 103,039 |
 | Markov Context | 0.5752 | 0.9510 | 0.0524 | 0.0199 | 103,039 |
 | Transformer | 0.5968 | 0.9577 | 0.1091 | 0.0237 | 103,039 |
+
+### Retired Models
+
+Dropped from the registry on 2026-04-14 — kept here for the historical record. Both underperformed naive baseline (0.5857) and offered no unique signal worth the surface area.
+
+| Model | Overall | Fast | Breaking | Off-Speed | Reason retired |
+|-------|---------|------|----------|-----------|----------------|
+| N-Gram (n=4) | 0.5484 | 0.8198 | 0.1927 | 0.0860 | Barely differs from n=3; longer context doesn't help at 3-class granularity |
+| Frequency-Based (Oracle) | 0.4912 | 0.6146 | 0.3535 | 0.2139 | Samples rather than predicts — lowest accuracy of any model |
 
 ## Per-Pitcher Lift Over Naive Baseline
 

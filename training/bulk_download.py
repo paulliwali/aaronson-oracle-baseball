@@ -1,12 +1,14 @@
-"""Fast bulk download: fetch all Statcast data by month, filter to our pitchers.
+"""Fast bulk download: fetch all Statcast data by month, save every starter.
 
-Much faster than per-pitcher API calls since statcast() fetches everything at once.
+Auto-discovers starters from the Statcast feed — any pitcher meeting
+MIN_PITCHES_PER_GAME on any date gets a per-season CSV. `pitchers.json` is
+used only for the `seasons` field; the curated roster is ignored.
 
 Usage: uv run python training/bulk_download.py
 """
 
 import json
-import sys
+import re
 import time
 from pathlib import Path
 
@@ -21,29 +23,25 @@ PITCHERS_PATH = Path(__file__).parent / "pitchers.json"
 MIN_PITCHES_PER_GAME = 60
 
 
+def _safe_name(raw: str) -> str:
+    """Normalize a player_name ("Last, First") into a filesystem-safe slug."""
+    parts = raw.split(", ", 1)
+    display = f"{parts[1]} {parts[0]}" if len(parts) == 2 else raw
+    slug = display.strip().lower().replace(" ", "_")
+    # Strip anything that isn't alnum/underscore/hyphen/dot to avoid surprises
+    return re.sub(r"[^a-z0-9_\-.]", "", slug) or "unknown"
+
+
 def main():
     DATA_DIR.mkdir(parents=True, exist_ok=True)
 
     with open(PITCHERS_PATH) as f:
-        data = json.load(f)
-    pitchers = data["pitchers"]
-    seasons = data["seasons"]
-    pitcher_ids = {p["mlbam_id"] for p in pitchers}
-    id_to_name = {p["mlbam_id"]: p["name"] for p in pitchers}
+        seasons = json.load(f)["seasons"]
 
     with open(PITCH_MAP_PATH) as f:
         pitch_map = json.load(f)
 
-    # Check which files already exist
-    existing = set()
-    for p in pitchers:
-        safe_name = p["name"].replace(" ", "_").lower()
-        for season in seasons:
-            path = DATA_DIR / f"{safe_name}_{season}.csv"
-            if path.exists():
-                existing.add((p["mlbam_id"], season))
-
-    print(f"{len(existing)} pitcher-seasons already downloaded, skipping those")
+    print(f"Auto-discovering starters across seasons {seasons}")
 
     # Months to fetch per season
     months = [
@@ -59,14 +57,8 @@ def main():
     ]
 
     for season in seasons:
-        # Check if all pitchers already have this season
-        needed = [pid for pid in pitcher_ids if (pid, season) not in existing]
-        if not needed:
-            print(f"\n{season}: all pitchers already downloaded, skipping")
-            continue
-
         print(f"\n{'='*60}")
-        print(f"Season {season}: need data for {len(needed)} pitchers")
+        print(f"Season {season}")
         print(f"{'='*60}")
 
         season_frames = []
@@ -95,22 +87,15 @@ def main():
         all_data = all_data.copy()
         print(f"  Total: {len(all_data):,} pitches for {season}")
 
-        # Filter to our pitchers
-        pitcher_data = all_data[all_data["pitcher"].isin(pitcher_ids)]
-        print(f"  Our pitchers: {len(pitcher_data):,} pitches, {pitcher_data['pitcher'].nunique()} pitchers")
+        # Apply pitch mapping (drops pitches without a simplified label)
+        all_data["pitch_type_simplified"] = all_data["pitch_type"].map(pitch_map)
+        all_data = all_data.dropna(subset=["pitch_type_simplified", "pitcher"])
 
-        # Apply pitch mapping
-        pitcher_data = pitcher_data.copy()
-        pitcher_data["pitch_type_simplified"] = pitcher_data["pitch_type"].map(pitch_map)
-        pitcher_data = pitcher_data.dropna(subset=["pitch_type_simplified"])
-
-        # Save per-pitcher CSVs
+        # Per-pitcher: keep only the dates where they threw >= MIN_PITCHES_PER_GAME
+        # (this is how we auto-identify starter appearances without a roster file).
         saved = 0
-        for pid, pdf in pitcher_data.groupby("pitcher"):
-            if (pid, season) in existing:
-                continue
-
-            # Filter to starter appearances
+        skipped_existing = 0
+        for pid, pdf in all_data.groupby("pitcher"):
             game_counts = pdf.groupby("game_date").size()
             starter_dates = game_counts[game_counts >= MIN_PITCHES_PER_GAME].index
             pdf = pdf[pdf["game_date"].isin(starter_dates)]
@@ -118,15 +103,20 @@ def main():
             if pdf.empty:
                 continue
 
-            name = id_to_name.get(pid, str(pid))
-            safe_name = name.replace(" ", "_").lower()
+            raw_name = pdf["player_name"].iloc[0] if "player_name" in pdf.columns else str(pid)
+            safe_name = _safe_name(raw_name)
             out_path = DATA_DIR / f"{safe_name}_{season}.csv"
+
+            if out_path.exists():
+                skipped_existing += 1
+                continue
+
             pdf.to_csv(out_path, index=False)
             n_games = pdf["game_date"].nunique()
-            print(f"    {name}: {len(pdf)} pitches, {n_games} games -> {out_path.name}")
+            print(f"    {raw_name}: {len(pdf)} pitches, {n_games} games -> {out_path.name}")
             saved += 1
 
-        print(f"  Saved {saved} new pitcher-season files for {season}")
+        print(f"  Saved {saved} new pitcher-season files, skipped {skipped_existing} already-present")
 
     # Summary
     total_files = len(list(DATA_DIR.glob("*.csv")))
